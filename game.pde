@@ -13,7 +13,7 @@ public class Game extends GViewListener {
     graphicsHandle.stroke(color(0,0,0));
     graphicsHandle.strokeWeight(5);
     
-    float gap = float(width()) / float(config.gridSize);
+    float gap = float(width()) / float(config.getGridSize());
     for (float position = gap; position < width() - gap / 2; position += gap) {
       int actualPosition = round(position);
       graphicsHandle.line(actualPosition, 0, actualPosition, height());
