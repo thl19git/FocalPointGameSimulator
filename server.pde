@@ -4,9 +4,7 @@ public class Server {
   
   Server() {
     resetGridOccupancy();
-    println("reset occupancy");
     createAgents();
-    println("created agents");
   }
   
   private void resetGridOccupancy() {
@@ -23,7 +21,6 @@ public class Server {
       
       while (true) {
         randomPosition = floor(random(gridSize*gridSize));
-        println(randomPosition);
         if (gridOccupancy.get(randomPosition) < MAX_GRID_OCCUPANCY) {
           break;
         }
@@ -36,5 +33,9 @@ public class Server {
       Agent agent = new Agent(ID, initialPosition);
       agents.add(agent);
     }
+  }
+  
+  public ArrayList<Agent> getAgents() {
+    return agents;
   }
 }

@@ -3,7 +3,10 @@ public class Game extends GViewListener {
     PGraphics graphicsHandle = getGraphics();
     graphicsHandle.beginDraw();
     graphicsHandle.background(255);
+    
     drawGrid(graphicsHandle);
+    drawAgents(graphicsHandle);
+    
     graphicsHandle.endDraw();
     
     validate();
@@ -15,9 +18,27 @@ public class Game extends GViewListener {
     
     float gap = float(width()) / float(config.getGridSize());
     for (float position = gap; position < width() - gap / 2; position += gap) {
-      int actualPosition = round(position);
-      graphicsHandle.line(actualPosition, 0, actualPosition, height());
-      graphicsHandle.line(0, actualPosition, width(), actualPosition);
+      graphicsHandle.line(position, 0, position, height());
+      graphicsHandle.line(0, position, width(), position);
+    }
+  }
+  
+  private void drawAgents(PGraphics graphicsHandle) {
+    ArrayList<Agent> agents = server.getAgents();
+    graphicsHandle.strokeWeight(3);
+    
+    for (int index = 0; index < config.getNumAgents(); index++) {
+      Agent agent = agents.get(index);
+      GridPosition position = agent.getGridPosition();
+      int xCoord = position.getX();
+      int yCoord = position.getY();
+      
+      float gap = float(width()) / float(config.getGridSize());
+      
+      float xPosition = gap * (float(xCoord) + 0.5);
+      float yPosition = gap * (float(yCoord) + 0.5);
+      
+      graphicsHandle.circle(xPosition, yPosition, AGENT_WIDTH*gap);
     }
   }
 }

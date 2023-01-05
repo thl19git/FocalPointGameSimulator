@@ -4,6 +4,7 @@ public class Config {
   private int numRounds;
   private int numClusters;
   private int numChoices;
+  private int numMoves;
   
   Config() {
     setGridSize(10);
@@ -11,6 +12,7 @@ public class Config {
     setNumRounds(10);
     setNumClusters(2);
     setNumChoices(5);
+    setNumMoves(4);
   }
 
   public int getNumAgents() {
@@ -51,5 +53,13 @@ public class Config {
 
   public void setNumChoices(int numChoices) {
     this.numChoices = max(1, numChoices);
+  }
+  
+  public int getNumMoves() {
+    return numMoves;
+  }
+  
+  public void setNumMoves(int numMoves) {
+    this.numMoves = max(0, numMoves);
   }
 }
