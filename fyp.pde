@@ -12,7 +12,7 @@ void setup() {
   
   config = new Config();
   
-  gameView = new GView(this, width/2, (16*height/90), 2*width/5, 2*width/5, P2D);
+  gameView = new GView(this, width/2, 2*(height-2*width/5)/5, 2*width/5, 2*width/5, P2D);
   game = new Game();
   gameView.addListener(game);
 }
