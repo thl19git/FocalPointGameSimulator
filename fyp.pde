@@ -4,6 +4,7 @@ import java.util.Collections;
 final int MAX_GRID_OCCUPANCY = 1;
 final int START_ID = 1000;
 final float AGENT_WIDTH = 0.6;
+final int AGENT_MOVE_FRAMES = 30;
 
 GView gameView;
 Game game;
@@ -11,6 +12,7 @@ Config config;
 Server server;
 
 void setup() {
+  frameRate(30);
   fullScreen(P2D,2);
   background(100);
   
@@ -26,5 +28,5 @@ void setup() {
 }
 
 void draw() {
-  
+  server.run();
 }

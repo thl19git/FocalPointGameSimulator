@@ -5,7 +5,12 @@ public class Game extends GViewListener {
     graphicsHandle.background(255);
     
     drawGrid(graphicsHandle);
-    drawAgents(graphicsHandle);
+    
+    if (server.getAgentsMoving()) {
+      drawMovingAgents(graphicsHandle);
+    } else {
+      drawStaticAgents(graphicsHandle);
+    }
     
     graphicsHandle.endDraw();
     
@@ -23,11 +28,9 @@ public class Game extends GViewListener {
     }
   }
   
-  private void drawAgents(PGraphics graphicsHandle) {
+  private void drawStaticAgents(PGraphics graphicsHandle) {
     ArrayList<Agent> agents = server.getAgents();
-    graphicsHandle.strokeWeight(3);
-    
-    for (int index = 0; index < config.getNumAgents(); index++) {
+    for (int index = 0; index < agents.size(); index++) {
       Agent agent = agents.get(index);
       GridPosition position = agent.getGridPosition();
       int xCoord = position.getX();
@@ -38,7 +41,44 @@ public class Game extends GViewListener {
       float xPosition = gap * (float(xCoord) + 0.5);
       float yPosition = gap * (float(yCoord) + 0.5);
       
-      graphicsHandle.circle(xPosition, yPosition, AGENT_WIDTH*gap);
+      drawAgent(graphicsHandle, xPosition, yPosition, gap * AGENT_WIDTH);
     }
+  }
+  
+  private void drawMovingAgents(PGraphics graphicsHandle) {
+    ArrayList<Agent> agents = server.getAgents();
+    for (int index = 0; index < agents.size(); index++) {
+      Agent agent = agents.get(index);
+      GridPosition position = agent.getGridPosition();
+      GridPosition nextPosition = agent.getNextGridPosition();
+      int xCoord = position.getX();
+      int yCoord = position.getY();
+      int nextXCoord = nextPosition.getX();
+      int nextYCoord = nextPosition.getY();
+      
+      float gap = float(width()) / float(config.getGridSize());
+      
+      float xPosition = gap * (float(xCoord) + 0.5);
+      float yPosition = gap * (float(yCoord) + 0.5);
+      
+      float nextXPosition = gap * (float(nextXCoord) + 0.5);
+      float nextYPosition = gap * (float(nextYCoord) + 0.5);
+      
+      float movingXPosition = calculateMovingPosition(xPosition, nextXPosition);
+      float movingYPosition = calculateMovingPosition(yPosition, nextYPosition);
+      
+      drawAgent(graphicsHandle, movingXPosition, movingYPosition, gap * AGENT_WIDTH);
+    }
+  }
+  
+  private float calculateMovingPosition(float position, float nextPosition) {
+    return position + (1 + AGENT_MOVE_FRAMES - server.getFramesToMove()) * (nextPosition - position) / AGENT_MOVE_FRAMES;
+  }
+  
+  private void drawAgent(PGraphics graphicsHandle, float xPosition, float yPosition, float size) {
+    graphicsHandle.strokeWeight(3);
+    graphicsHandle.fill(color(128,0,128));
+    graphicsHandle.circle(xPosition, yPosition, size);
+    graphicsHandle.noFill();
   }
 }

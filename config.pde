@@ -8,7 +8,7 @@ public class Config {
   
   Config() {
     setGridSize(10);
-    setNumAgents(20);
+    setNumAgents(25);
     setNumRounds(10);
     setNumClusters(2);
     setNumChoices(5);
