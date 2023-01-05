@@ -17,39 +17,39 @@ public class Config {
     return numAgents;
   }
 
-  public void setNumAgents(int newNumAgents) {
-    numAgents = clamp(1, gridSize*gridSize/2, newNumAgents);
+  public void setNumAgents(int numAgents) {
+    this.numAgents = clamp(1, gridSize*gridSize/2, numAgents);
   }
 
   public int getGridSize() {
     return gridSize;
   }
 
-  public void setGridSize(int newGridSize) {
-    gridSize = max(3, newGridSize);
+  public void setGridSize(int gridSize) {
+    this.gridSize = max(3, gridSize);
   }
 
   public int getNumRounds() {
     return numRounds;
   }
 
-  public void setNumRounds(int newNumRounds) {
-    numRounds = max(1, newNumRounds);
+  public void setNumRounds(int numRounds) {
+    this.numRounds = max(1, numRounds);
   }
 
   public int getNumClusters() {
     return numClusters;
   }
 
-  public void setNumClusters(int newNumClusters) {
-    numClusters = clamp(1, numAgents, newNumClusters);
+  public void setNumClusters(int numClusters) {
+    this.numClusters = clamp(1, numAgents, numClusters);
   }
 
   public int getNumChoices() {
     return numChoices;
   }
 
-  public void setNumChoices(int newNumChoices) {
-    numChoices = max(1, newNumChoices);
+  public void setNumChoices(int numChoices) {
+    this.numChoices = max(1, numChoices);
   }
 }
