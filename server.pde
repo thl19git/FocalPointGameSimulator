@@ -1,7 +1,7 @@
 public class Server {
   private ArrayList<Agent> agents;
-  private ArrayList<Integer> gridOccupancy;
-  private ArrayList<Integer> oldGridOccupancy;
+  private int[] gridOccupancy;
+  private int[] oldGridOccupancy;
   private int framesToMove;
   private boolean agentsMoving;
   
@@ -14,7 +14,7 @@ public class Server {
   
   private void resetGridOccupancy() {
     int gridSize = config.getGridSize();
-    gridOccupancy = new ArrayList<Integer>(Collections.nCopies(gridSize*gridSize, 0));
+    gridOccupancy = new int[gridSize*gridSize];
   }
   
   private void createAgents() {
@@ -26,7 +26,7 @@ public class Server {
       
       while (true) {
         randomPosition = floor(random(gridSize*gridSize));
-        if (gridOccupancy.get(randomPosition) < MAX_GRID_OCCUPANCY) {
+        if (gridOccupancy[randomPosition] < MAX_GRID_OCCUPANCY) {
           break;
         }
       }
@@ -92,7 +92,7 @@ public class Server {
   
   private boolean positionHasSpace(int x, int y) {
     int index = x + config.getGridSize() * y;
-    Integer occupancy = gridOccupancy.get(index);
+    int occupancy = gridOccupancy[index];
     
     return occupancy < MAX_GRID_OCCUPANCY;
   }
@@ -108,13 +108,11 @@ public class Server {
   private void changeGridOccupancy(GridPosition position, int amount) {
     int index = positionToIndex(position);
     
-    Integer occupancy = gridOccupancy.get(index);
-    occupancy += amount;
-    gridOccupancy.set(index, occupancy);
+    gridOccupancy[index] += amount;
   }
   
   public int gridOccupancyAtIndex(int index) {
-    return gridOccupancy.get(index);
+    return gridOccupancy[index];
   }
   
   public int gridOccupancyAtPosition(GridPosition position) {
@@ -124,7 +122,7 @@ public class Server {
   }
   
   public int oldGridOccupancyAtIndex(int index) {
-    return oldGridOccupancy.get(index);
+    return oldGridOccupancy[index];
   }
   
   public int oldGridOccupancyAtPosition(GridPosition position) {
@@ -147,7 +145,7 @@ public class Server {
   
   public void run() {
     if (agentsMoving == false) {
-      oldGridOccupancy = new ArrayList<Integer>(gridOccupancy);
+      oldGridOccupancy = gridOccupancy.clone();
       for (int index = 0; index < agents.size(); index++) {
         Agent agent = agents.get(index);
         GridPosition position = agent.getGridPosition();
