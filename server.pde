@@ -1,6 +1,7 @@
 public class Server {
   private ArrayList<Agent> agents;
   private ArrayList<Integer> gridOccupancy;
+  private ArrayList<Integer> oldGridOccupancy;
   private int framesToMove;
   private boolean agentsMoving;
   
@@ -28,14 +29,12 @@ public class Server {
         if (gridOccupancy.get(randomPosition) < MAX_GRID_OCCUPANCY) {
           break;
         }
-        println("Sqaure ", randomPosition," is full");
       }
-      
-      println("Creating agent at, ", randomPosition);
       
       GridPosition initialPosition = new GridPosition(randomPosition % gridSize, randomPosition / gridSize);
       incrementGridOccupancy(initialPosition);
-      Agent agent = new Agent(ID, initialPosition);
+      int positionInBox = gridOccupancyAtPosition(initialPosition);
+      Agent agent = new Agent(ID, initialPosition, positionInBox);
       agents.add(agent);
     }
   }
@@ -59,6 +58,14 @@ public class Server {
   public void toggleAgentsMoving() {
     agentsMoving = !agentsMoving;
     framesToMove = AGENT_MOVE_FRAMES;
+  }
+  
+  public int positionToIndex(GridPosition position) {
+    int x = position.getX();
+    int y = position.getY();
+    int index = x + config.getGridSize() * y;
+    
+    return index;
   }
   
   private ArrayList<GridPosition> getValidPositions(GridPosition position) {
@@ -99,18 +106,48 @@ public class Server {
   }
   
   private void changeGridOccupancy(GridPosition position, int amount) {
-    int x = position.getX();
-    int y = position.getY();
-    
-    int index = x + config.getGridSize() * y;
+    int index = positionToIndex(position);
     
     Integer occupancy = gridOccupancy.get(index);
     occupancy += amount;
     gridOccupancy.set(index, occupancy);
   }
   
+  public int gridOccupancyAtIndex(int index) {
+    return gridOccupancy.get(index);
+  }
+  
+  public int gridOccupancyAtPosition(GridPosition position) {
+    int index = positionToIndex(position);
+    
+    return gridOccupancyAtIndex(index);
+  }
+  
+  public int oldGridOccupancyAtIndex(int index) {
+    return oldGridOccupancy.get(index);
+  }
+  
+  public int oldGridOccupancyAtPosition(GridPosition position) {
+    int index = positionToIndex(position);
+    
+    return oldGridOccupancyAtIndex(index);
+  }
+  
+  public void allocateNewInternalPositions() {
+    int gridSize = config.getGridSize();
+    int allocated[] = new int[gridSize*gridSize];
+    for (int index = 0; index < agents.size(); index++) {
+        Agent agent = agents.get(index);
+        GridPosition nextPosition = agent.getNextGridPosition();
+        int gridIndex = server.positionToIndex(nextPosition);
+        allocated[gridIndex]++;
+        agent.setNextPositionInBox(allocated[gridIndex]);
+    }
+  }
+  
   public void run() {
     if (agentsMoving == false) {
+      oldGridOccupancy = new ArrayList<Integer>(gridOccupancy);
       for (int index = 0; index < agents.size(); index++) {
         Agent agent = agents.get(index);
         GridPosition position = agent.getGridPosition();
@@ -123,6 +160,7 @@ public class Server {
           incrementGridOccupancy(validPositions.get(nextPositionIndex));
         }
       }
+      allocateNewInternalPositions();
       toggleAgentsMoving();
     } else {
       decrementFramesToMove();
@@ -133,7 +171,6 @@ public class Server {
           agent.reachedNextGridPosition();
         }
       }
-      
       game.update();
     }
   }
