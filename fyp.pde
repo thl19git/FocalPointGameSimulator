@@ -1,5 +1,6 @@
 import g4p_controls.*;
 import java.util.Collections;
+import java.util.HashSet;
 
 final int MAX_GRID_OCCUPANCY = 4; // Maximum configurable value = 4
 final int START_ID = 1000;

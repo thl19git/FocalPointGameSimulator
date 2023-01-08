@@ -3,13 +3,13 @@ public class Server {
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
   private int framesToMove;
-  private boolean agentsMoving;
+  private GameStage stage;
   
   Server() {
     resetGridOccupancy();
     createAgents();
     framesToMove = AGENT_MOVE_FRAMES;
-    agentsMoving = false;
+    stage = GameStage.START;
   }
   
   private void resetGridOccupancy() {
@@ -20,21 +20,19 @@ public class Server {
   private void createAgents() {
     agents = new ArrayList<Agent>();
     
-    int gridSize = config.getGridSize();
     for (int ID = START_ID; ID < START_ID + config.getNumAgents(); ID++) {
-      int randomPosition;
+      GridPosition randomPosition;
       
       while (true) {
-        randomPosition = floor(random(gridSize*gridSize));
-        if (gridOccupancy[randomPosition] < MAX_GRID_OCCUPANCY) {
+        randomPosition = randomGridPosition();
+        if (gridOccupancy[positionToIndex(randomPosition)] < MAX_GRID_OCCUPANCY) {
           break;
         }
       }
-      
-      GridPosition initialPosition = new GridPosition(randomPosition % gridSize, randomPosition / gridSize);
-      incrementGridOccupancy(initialPosition);
-      int positionInBox = gridOccupancyAtPosition(initialPosition);
-      Agent agent = new Agent(ID, initialPosition, positionInBox);
+
+      incrementGridOccupancy(randomPosition);
+      int positionInBox = gridOccupancyAtPosition(randomPosition);
+      Agent agent = new Agent(ID, randomPosition, positionInBox);
       agents.add(agent);
     }
   }
@@ -49,23 +47,6 @@ public class Server {
   
   public int getFramesToMove() {
     return framesToMove;
-  }
-  
-  public boolean getAgentsMoving() {
-    return agentsMoving;
-  }
-  
-  public void toggleAgentsMoving() {
-    agentsMoving = !agentsMoving;
-    framesToMove = AGENT_MOVE_FRAMES;
-  }
-  
-  public int positionToIndex(GridPosition position) {
-    int x = position.getX();
-    int y = position.getY();
-    int index = x + config.getGridSize() * y;
-    
-    return index;
   }
   
   private ArrayList<GridPosition> getValidPositions(GridPosition position) {
@@ -131,45 +112,99 @@ public class Server {
     return oldGridOccupancyAtIndex(index);
   }
   
-  public void allocateNewInternalPositions() {
+  private void allocateNewInternalPositions() {
     int gridSize = config.getGridSize();
     int allocated[] = new int[gridSize*gridSize];
     for (int index = 0; index < agents.size(); index++) {
         Agent agent = agents.get(index);
         GridPosition nextPosition = agent.getNextGridPosition();
-        int gridIndex = server.positionToIndex(nextPosition);
+        int gridIndex = positionToIndex(nextPosition);
         allocated[gridIndex]++;
         agent.setNextPositionInBox(allocated[gridIndex]);
     }
   }
   
-  public void run() {
-    if (agentsMoving == false) {
-      oldGridOccupancy = gridOccupancy.clone();
+  public GameStage getStage() {
+    return stage;
+  }
+  
+  private void startStage() {
+    stage = GameStage.MOVE_DECISION;
+  }
+  
+  private void moveDecisionStage() {
+    oldGridOccupancy = gridOccupancy.clone();
+    for (int index = 0; index < agents.size(); index++) {
+      Agent agent = agents.get(index);
+      GridPosition position = agent.getGridPosition();
+      ArrayList<GridPosition> validPositions = getValidPositions(position);
+      int nextPositionIndex = agent.chooseNextGridPosition(validPositions);
+      agent.setNextGridPosition(validPositions.get(nextPositionIndex));
+      
+      if (validPositions.get(nextPositionIndex) != position) { // i.e. moving square
+        decrementGridOccupancy(position);
+        incrementGridOccupancy(validPositions.get(nextPositionIndex));
+      }
+    }
+    allocateNewInternalPositions();
+    stage = GameStage.AGENTS_MOVING;
+  }
+  
+  private void agentsMovingStage() {
+    decrementFramesToMove();
+    if (framesToMove == 0) {
       for (int index = 0; index < agents.size(); index++) {
         Agent agent = agents.get(index);
-        GridPosition position = agent.getGridPosition();
-        ArrayList<GridPosition> validPositions = getValidPositions(position);
-        int nextPositionIndex = agent.chooseNextGridPosition(validPositions);
-        agent.setNextGridPosition(validPositions.get(nextPositionIndex));
-        
-        if (validPositions.get(nextPositionIndex) != position) { // i.e. moving square
-          decrementGridOccupancy(position);
-          incrementGridOccupancy(validPositions.get(nextPositionIndex));
-        }
+        agent.reachedNextGridPosition();
       }
-      allocateNewInternalPositions();
-      toggleAgentsMoving();
-    } else {
-      decrementFramesToMove();
-      if (framesToMove == 0) {
-        toggleAgentsMoving();
-        for (int index = 0; index < agents.size(); index++) {
-          Agent agent = agents.get(index);
-          agent.reachedNextGridPosition();
-        }
-      }
-      game.update();
+      framesToMove = AGENT_MOVE_FRAMES;
+      stage = GameStage.MOVE_DECISION;
+    }
+    game.update();
+  }
+  
+  private void communicationStage() {
+    
+  }
+  
+  private void clusteringStage() {
+    
+  }
+  
+  private void votingStage() {
+    
+  }
+  
+  private void finishStage() {
+    
+  }
+  
+  public void run() {
+    switch (stage) {
+      case START:
+        startStage();
+        break;
+      case MOVE_DECISION:
+        moveDecisionStage();
+        break;
+      case AGENTS_MOVING:
+        agentsMovingStage();
+        break;
+      case COMMUNICATION:
+        communicationStage();
+        break;
+      case CLUSTERING:
+        clusteringStage();
+        break;
+      case VOTING:
+        votingStage();
+        break;
+      case FINISH:
+        finishStage();
+        break;
+      default:
+        println("Stage not implemented, quitting");
+        exit();
     }
   }
 }

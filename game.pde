@@ -8,15 +8,28 @@ public class Game extends GViewListener {
     
     drawGrid(graphicsHandle);
     
-    if (server.getAgentsMoving()) {
-      drawMovingAgents(graphicsHandle);
-    } else {
-      drawStaticAgents(graphicsHandle);
+    switch (server.getStage()) {
+      case MOVE_DECISION:
+        drawMoveDecisionStage(graphicsHandle);
+        break;
+      case AGENTS_MOVING:
+        drawAgentsMovingStage(graphicsHandle);
+        break;
+      default:
+        println("Update called, stage: ", server.getStage());
     }
     
     graphicsHandle.endDraw();
     
     validate();
+  }
+  
+  private void drawAgentsMovingStage(PGraphics graphicsHandle) {
+    drawMovingAgents(graphicsHandle);
+  }
+  
+  private void drawMoveDecisionStage(PGraphics graphicsHandle) {
+    drawStaticAgents(graphicsHandle);
   }
   
   private void drawGrid(PGraphics graphicsHandle) {
