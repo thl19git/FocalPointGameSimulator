@@ -120,7 +120,7 @@ public class Game extends GViewListener {
       sizeScaleFactor = 0.5;
     }
     
-    color agentColor = AGENT_COLORS[agent.getClusterNumber()];
+    color agentColor = agentColors[agent.getClusterNumber()];
     
     drawAgent(graphicsHandle, xPosition, yPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor);
   }
@@ -156,7 +156,7 @@ public class Game extends GViewListener {
       sizeScaleFactor = 0.5;
     }
     
-    color agentColor = AGENT_COLORS[agent.getClusterNumber()];
+    color agentColor = agentColors[agent.getClusterNumber()];
       
     drawAgent(graphicsHandle, movingXPosition, movingYPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor);
   }

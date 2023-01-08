@@ -46,7 +46,7 @@ public class Config {
   }
 
   public void setNumClusters(int numClusters) {
-    this.numClusters = clamp(1, AGENT_COLORS.length, numClusters);
+    this.numClusters = clamp(1, INITIAL_AGENT_COLORS.length, numClusters);
   }
 
   public int getNumChoices() {

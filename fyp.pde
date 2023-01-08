@@ -7,7 +7,8 @@ final int START_ID = 1000;
 final float AGENT_WIDTH = 0.6;
 final int AGENT_MOVE_FRAMES = 30;
 final int SHOW_CLUSTERING_FRAMES = 30;
-final color[] AGENT_COLORS = {color(128,0,128), color(128, 128, 0), color(0, 128, 128), color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)};
+final color[] INITIAL_AGENT_COLORS = {color(128,0,128), color(128, 128, 0), color(0, 128, 128), color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)};
+color[] agentColors;
 
 GView gameView;
 Game game;
@@ -20,6 +21,8 @@ void setup() {
   background(100);
   
   cursor(CROSS);
+  
+  agentColors = INITIAL_AGENT_COLORS.clone();
   
   // game requires server, requires config
   config = new Config();

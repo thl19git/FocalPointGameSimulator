@@ -4,6 +4,7 @@ public class Server {
   private int[] oldGridOccupancy;
   private int framesToMove;
   private int framesForClustering;
+  private int movementRounds;
   private GameStage stage;
   
   Server() {
@@ -11,6 +12,7 @@ public class Server {
     createAgents();
     framesToMove = AGENT_MOVE_FRAMES;
     framesForClustering = SHOW_CLUSTERING_FRAMES;
+    movementRounds = config.getNumMoves();
     stage = GameStage.START;
   }
   
@@ -41,10 +43,6 @@ public class Server {
   
   public ArrayList<Agent> getAgents() {
     return agents;
-  }
-  
-  private void decrementFramesToMove() {
-    framesToMove--;
   }
   
   public int getFramesToMove() {
@@ -153,7 +151,7 @@ public class Server {
   }
   
   private void agentsMovingStage() {
-    decrementFramesToMove();
+    framesToMove--;
     if (framesToMove == 0) {
       for (int index = 0; index < agents.size(); index++) {
         Agent agent = agents.get(index);
@@ -167,22 +165,25 @@ public class Server {
   }
   
   private void communicationStage() {
-    stage = GameStage.CLUSTERING;
+    movementRounds--;
+    if (movementRounds == 0) {
+      stage = GameStage.CLUSTERING;
+      movementRounds = config.getNumMoves();
+    } else {
+      stage = GameStage.MOVE_DECISION;
+    }
   }
   
   private void clusteringStage() {
     if (framesForClustering == SHOW_CLUSTERING_FRAMES) {
       kMeansClustering(agents);
-      framesForClustering--;
       game.update();
-    } else {
-      framesForClustering--;
-      if (framesForClustering == 0) {
-        stage = GameStage.MOVE_DECISION;
-        framesForClustering = SHOW_CLUSTERING_FRAMES;
-      }
     }
-    
+    framesForClustering--;
+    if (framesForClustering == 0) {
+      stage = GameStage.MOVE_DECISION;
+      framesForClustering = SHOW_CLUSTERING_FRAMES;
+    }
   }
   
   private void votingStage() {

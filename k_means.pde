@@ -8,7 +8,6 @@ public void kMeansClustering(ArrayList<Agent> agents) {
   }
   GridPosition[] centroids = new GridPosition[clusters];
   centroidSet.toArray(centroids);
-  Arrays.sort(centroids); // Attempts to reduce amount of colour switching
   
   updateCentroidsAndClusters(agents, centroids);
 }
@@ -51,6 +50,16 @@ public void updateCentroidsAndClusters(ArrayList<Agent> agents, GridPosition[] c
       int yPosition = yPositions[index] / numAgents;
       centroids[index] = new GridPosition(xPosition, yPosition);
     }
+  }
+  sortColors(centroids); // Reduces amount of color switching (not perfect but better than nothing)
+}
+
+public void sortColors(GridPosition[] centroids) {
+  GridPosition[] sortedCentroids = centroids.clone();
+  Arrays.sort(sortedCentroids);
+  for (int index = 0; index < centroids.length; index++) {
+    int unsortedIndex = Arrays.asList(centroids).indexOf(sortedCentroids[index]);
+    agentColors[unsortedIndex] = INITIAL_AGENT_COLORS[index];
   }
 }
 
