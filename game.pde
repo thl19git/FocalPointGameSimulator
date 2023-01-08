@@ -1,3 +1,5 @@
+final color[] AGENT_COLORS = {color(128,0,128)};
+
 public class Game extends GViewListener {
   public void update() {
     PGraphics graphicsHandle = getGraphics();
@@ -99,8 +101,10 @@ public class Game extends GViewListener {
     if (MAX_GRID_OCCUPANCY > 1) {
       sizeScaleFactor = 0.5;
     }
-      
-    drawAgent(graphicsHandle, xPosition, yPosition, gap * AGENT_WIDTH * sizeScaleFactor);
+    
+    color agentColor = AGENT_COLORS[agent.getClusterNumber()];
+    
+    drawAgent(graphicsHandle, xPosition, yPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor);
   }
   
   private void drawStaticAgents(PGraphics graphicsHandle) {
@@ -133,8 +137,10 @@ public class Game extends GViewListener {
     if (MAX_GRID_OCCUPANCY > 1) {
       sizeScaleFactor = 0.5;
     }
+    
+    color agentColor = AGENT_COLORS[agent.getClusterNumber()];
       
-    drawAgent(graphicsHandle, movingXPosition, movingYPosition, gap * AGENT_WIDTH * sizeScaleFactor);
+    drawAgent(graphicsHandle, movingXPosition, movingYPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor);
   }
   
   private void drawMovingAgents(PGraphics graphicsHandle) {
@@ -149,9 +155,9 @@ public class Game extends GViewListener {
     return position + (1 + AGENT_MOVE_FRAMES - server.getFramesToMove()) * (nextPosition - position) / AGENT_MOVE_FRAMES;
   }
   
-  private void drawAgent(PGraphics graphicsHandle, float xPosition, float yPosition, float size) {
+  private void drawAgent(PGraphics graphicsHandle, float xPosition, float yPosition, float size, color agentColor) {
     graphicsHandle.strokeWeight(3);
-    graphicsHandle.fill(color(128,0,128));
+    graphicsHandle.fill(agentColor);
     graphicsHandle.circle(xPosition, yPosition, size);
     graphicsHandle.noFill();
   }

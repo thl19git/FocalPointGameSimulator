@@ -4,6 +4,7 @@ public class Agent {
   private GridPosition nextGridPosition;
   private int positionInBox;
   private int nextPositionInBox;
+  private int clusterNumber;
   
   Agent(int ID, GridPosition gridPosition, int positionInBox) {
     this.ID = ID;
@@ -11,6 +12,7 @@ public class Agent {
     this.nextGridPosition = gridPosition;
     this.positionInBox = positionInBox;
     this.nextPositionInBox = positionInBox;
+    this.clusterNumber = 0;
   }
   
   public int getID() {
@@ -56,5 +58,13 @@ public class Agent {
   
   public void setNextPositionInBox(int nextPositionInBox) {
     this.nextPositionInBox = nextPositionInBox;
+  }
+  
+  public int getClusterNumber() {
+    return clusterNumber;
+  }
+  
+  public void setClusterNumber(int clusterNumber) {
+    this.clusterNumber = clusterNumber;
   }
 }
