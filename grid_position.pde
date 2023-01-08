@@ -1,4 +1,4 @@
-public class GridPosition {
+public class GridPosition implements Comparable<GridPosition>{
   private int x;
   private int y;
   
@@ -25,5 +25,22 @@ public class GridPosition {
   
   public int getY() {
     return y;
+  }
+  
+  @Override
+  public int compareTo(GridPosition position) {
+    if (position.getY() == this.y) {
+      if (position.getX() == this.x) {
+        return 0;
+      } else if (position.getX() > this.x) {
+        return -1;
+      } else {
+        return 1;
+      }
+    } else if (position.getY() > this.y) {
+      return -1;
+    } else {
+      return 1;
+    }
   }
 }

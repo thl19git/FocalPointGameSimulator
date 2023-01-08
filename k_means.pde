@@ -8,6 +8,7 @@ public void kMeansClustering(ArrayList<Agent> agents) {
   }
   GridPosition[] centroids = new GridPosition[clusters];
   centroidSet.toArray(centroids);
+  Arrays.sort(centroids); // Attempts to reduce amount of colour switching
   
   updateCentroidsAndClusters(agents, centroids);
 }
