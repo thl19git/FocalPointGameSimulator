@@ -1,5 +1,3 @@
-final color[] AGENT_COLORS = {color(128,0,128)};
-
 public class Game extends GViewListener {
   public void update() {
     PGraphics graphicsHandle = getGraphics();
@@ -15,6 +13,9 @@ public class Game extends GViewListener {
       case AGENTS_MOVING:
         drawAgentsMovingStage(graphicsHandle);
         break;
+      case CLUSTERING:
+        drawClusteringStage(graphicsHandle);
+        break;
       default:
         println("Update called, stage: ", server.getStage());
     }
@@ -22,6 +23,10 @@ public class Game extends GViewListener {
     graphicsHandle.endDraw();
     
     validate();
+  }
+  
+  private void drawClusteringStage(PGraphics graphicsHandle) {
+    drawStaticAgents(graphicsHandle);
   }
   
   private void drawAgentsMovingStage(PGraphics graphicsHandle) {

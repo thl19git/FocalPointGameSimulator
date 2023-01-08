@@ -3,12 +3,14 @@ public class Server {
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
   private int framesToMove;
+  private int framesForClustering;
   private GameStage stage;
   
   Server() {
     resetGridOccupancy();
     createAgents();
     framesToMove = AGENT_MOVE_FRAMES;
+    framesForClustering = SHOW_CLUSTERING_FRAMES;
     stage = GameStage.START;
   }
   
@@ -158,16 +160,28 @@ public class Server {
         agent.reachedNextGridPosition();
       }
       framesToMove = AGENT_MOVE_FRAMES;
-      stage = GameStage.MOVE_DECISION;
+      stage = GameStage.COMMUNICATION;
+      return;
     }
     game.update();
   }
   
   private void communicationStage() {
-    
+    stage = GameStage.CLUSTERING;
   }
   
   private void clusteringStage() {
+    if (framesForClustering == SHOW_CLUSTERING_FRAMES) {
+      kMeansClustering(agents);
+      framesForClustering--;
+      game.update();
+    } else {
+      framesForClustering--;
+      if (framesForClustering == 0) {
+        stage = GameStage.MOVE_DECISION;
+        framesForClustering = SHOW_CLUSTERING_FRAMES;
+      }
+    }
     
   }
   
