@@ -46,7 +46,7 @@ public class Config {
   }
 
   public void setNumClusters(int numClusters) {
-    this.numClusters = clamp(1, numAgents, numClusters);
+    this.numClusters = clamp(1, gridSize*gridSize/2, numClusters);
   }
 
   public int getNumChoices() {
