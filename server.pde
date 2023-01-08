@@ -25,7 +25,7 @@ public class Server {
       
       while (true) {
         randomPosition = randomGridPosition();
-        if (gridOccupancy[positionToIndex(randomPosition)] < MAX_GRID_OCCUPANCY) {
+        if (gridOccupancy[positionToIndex(randomPosition)] < config.getMaxGridOccupancy()) {
           break;
         }
       }
@@ -75,7 +75,7 @@ public class Server {
     int index = x + config.getGridSize() * y;
     int occupancy = gridOccupancy[index];
     
-    return occupancy < MAX_GRID_OCCUPANCY;
+    return occupancy < config.getMaxGridOccupancy();
   }
   
   private void decrementGridOccupancy(GridPosition position) {

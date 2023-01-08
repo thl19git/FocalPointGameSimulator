@@ -5,14 +5,16 @@ public class Config {
   private int numClusters;
   private int numChoices;
   private int numMoves;
+  private int maxGridOccupancy;
   
   Config() {
-    setGridSize(10);
-    setNumAgents(50);
+    setGridSize(6);
+    setNumAgents(25);
     setNumRounds(10);
     setNumClusters(2);
     setNumChoices(5);
     setNumMoves(4);
+    setMaxGridOccupancy(4);
   }
 
   public int getNumAgents() {
@@ -20,7 +22,7 @@ public class Config {
   }
 
   public void setNumAgents(int numAgents) {
-    this.numAgents = clamp(1, gridSize*gridSize/2, numAgents);
+    this.numAgents = clamp(1, gridSize*gridSize, numAgents);
   }
 
   public int getGridSize() {
@@ -61,5 +63,13 @@ public class Config {
   
   public void setNumMoves(int numMoves) {
     this.numMoves = max(0, numMoves);
+  }
+  
+  public int getMaxGridOccupancy() {
+    return maxGridOccupancy;
+  }
+  
+  public void setMaxGridOccupancy(int maxGridOccupancy) {
+    this.maxGridOccupancy = clamp(1, 4, maxGridOccupancy);
   }
 }

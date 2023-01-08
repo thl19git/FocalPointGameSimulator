@@ -111,7 +111,7 @@ public class Game extends GViewListener {
     float yPosition = exactNewYPosition(position, boxPosition);
     
     float sizeScaleFactor = 1.0;
-    if (MAX_GRID_OCCUPANCY > 1) {
+    if (config.getMaxGridOccupancy() > 1) {
       sizeScaleFactor = 0.5;
     }
     
@@ -147,7 +147,7 @@ public class Game extends GViewListener {
     float movingYPosition = calculateMovingPosition(yPosition, nextYPosition);
     
     float sizeScaleFactor = 1.0;
-    if (MAX_GRID_OCCUPANCY > 1) {
+    if (config.getMaxGridOccupancy() > 1) {
       sizeScaleFactor = 0.5;
     }
     
