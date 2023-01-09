@@ -2,8 +2,10 @@ public class Server {
   private ArrayList<Agent> agents;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
+  private boolean[] voteResults;
   private int framesToMove;
   private int framesForClustering;
+  private int framesForVotes;
   private int movementRounds;
   private GameStage stage;
   
@@ -12,6 +14,7 @@ public class Server {
     createAgents();
     framesToMove = AGENT_MOVE_FRAMES;
     framesForClustering = SHOW_CLUSTERING_FRAMES;
+    framesForVotes = SHOW_VOTES_FRAMES;
     movementRounds = config.getNumMoves();
     stage = GameStage.START;
   }
@@ -127,6 +130,46 @@ public class Server {
     return stage;
   }
   
+  private void gatherVotes(ArrayList<HashSet<Integer>> votes) {
+    int choices = config.getNumChoices();
+    for (Agent agent : agents) {
+      int agentCluster = agent.getClusterNumber();
+      int vote = agent.voteForChoice(choices);
+      votes.get(agentCluster).add(vote);
+    }
+  }
+  
+  private void calculateVoteResults(ArrayList<HashSet<Integer>> votes) {
+    int clusters = config.getNumClusters();
+    voteResults = new boolean[clusters];
+    
+    for (int cluster = 0; cluster < clusters; cluster++) {
+      voteResults[cluster] = votes.get(cluster).size() == 1;
+    }
+  }
+  
+  private void distributeVoteResults() {
+    for (Agent agent : agents) {
+      int cluster = agent.getClusterNumber();
+      boolean result = voteResults[cluster];
+      agent.receiveVoteResult(result);
+    }
+  }
+  
+  private void conductVote() {
+    int clusters = config.getNumClusters();
+    ArrayList<HashSet<Integer>> votes = new ArrayList<HashSet<Integer>>();
+    
+    for (int cluster = 0; cluster < clusters; cluster++) {
+      HashSet<Integer> set = new HashSet<Integer>();
+      votes.add(set);
+    }
+    
+    gatherVotes(votes);
+    calculateVoteResults(votes);
+    distributeVoteResults();
+  }
+  
   private void startStage() {
     stage = GameStage.MOVE_DECISION;
   }
@@ -178,13 +221,20 @@ public class Server {
     }
     framesForClustering--;
     if (framesForClustering == 0) {
-      stage = GameStage.MOVE_DECISION;
+      stage = GameStage.VOTING;
       framesForClustering = SHOW_CLUSTERING_FRAMES;
     }
   }
   
   private void votingStage() {
-    
+    if (framesForVotes == SHOW_VOTES_FRAMES) {
+      conductVote();
+    }
+    framesForVotes--;
+    if (framesForVotes == 0) {
+      stage = GameStage.MOVE_DECISION;
+      framesForVotes = SHOW_VOTES_FRAMES;
+    }
   }
   
   private void finishStage() {

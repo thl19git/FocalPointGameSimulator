@@ -67,4 +67,15 @@ public class Agent {
   public void setClusterNumber(int clusterNumber) {
     this.clusterNumber = clusterNumber;
   }
+  
+  // Must return a number in the range [1..numChoices]
+  public int voteForChoice(int numChoices) {
+    return round(random(numChoices));
+  }
+  
+  public void receiveVoteResult(boolean result) {
+    if (result == true) {
+       println(ID, " - winner!");
+    }
+  }
 }
