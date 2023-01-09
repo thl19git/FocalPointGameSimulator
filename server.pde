@@ -115,8 +115,7 @@ public class Server {
   private void allocateNewInternalPositions() {
     int gridSize = config.getGridSize();
     int allocated[] = new int[gridSize*gridSize];
-    for (int index = 0; index < agents.size(); index++) {
-        Agent agent = agents.get(index);
+    for (Agent agent : agents) {
         GridPosition nextPosition = agent.getNextGridPosition();
         int gridIndex = positionToIndex(nextPosition);
         allocated[gridIndex]++;
@@ -134,8 +133,7 @@ public class Server {
   
   private void moveDecisionStage() {
     oldGridOccupancy = gridOccupancy.clone();
-    for (int index = 0; index < agents.size(); index++) {
-      Agent agent = agents.get(index);
+    for (Agent agent : agents) {
       GridPosition position = agent.getGridPosition();
       ArrayList<GridPosition> validPositions = getValidPositions(position);
       int nextPositionIndex = agent.chooseNextGridPosition(validPositions);
@@ -153,8 +151,7 @@ public class Server {
   private void agentsMovingStage() {
     framesToMove--;
     if (framesToMove == 0) {
-      for (int index = 0; index < agents.size(); index++) {
-        Agent agent = agents.get(index);
+      for (Agent agent : agents) {
         agent.reachedNextGridPosition();
       }
       framesToMove = AGENT_MOVE_FRAMES;

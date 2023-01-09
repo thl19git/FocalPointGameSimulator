@@ -127,8 +127,7 @@ public class Game extends GViewListener {
   
   private void drawStaticAgents(PGraphics graphicsHandle) {
     ArrayList<Agent> agents = server.getAgents();
-    for (int index = 0; index < agents.size(); index++) {
-      Agent agent = agents.get(index);
+    for (Agent agent : agents) {
       drawStaticAgent(graphicsHandle, agent);
     }
   }
@@ -163,8 +162,7 @@ public class Game extends GViewListener {
   
   private void drawMovingAgents(PGraphics graphicsHandle) {
     ArrayList<Agent> agents = server.getAgents();
-    for (int index = 0; index < agents.size(); index++) {
-      Agent agent = agents.get(index);
+    for (Agent agent : agents) {
       drawMovingAgent(graphicsHandle, agent);
     }
   }
