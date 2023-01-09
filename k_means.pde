@@ -4,7 +4,8 @@ public void kMeansClustering(ArrayList<Agent> agents) {
   
   // Performance degrades as clusters / gridSize increases, but okay for now (ensures unique centroids initially)
   while (centroidSet.size() < clusters) {
-    centroidSet.add(randomGridPosition());
+    //centroidSet.add(randomGridPosition());
+    centroidSet.add(agents.get(floor(random(agents.size()))).getGridPosition());
   }
   GridPosition[] centroids = new GridPosition[clusters];
   centroidSet.toArray(centroids);

@@ -11,10 +11,10 @@ public class Config {
     setGridSize(10);
     setNumAgents(50);
     setNumRounds(10);
+    setMaxGridOccupancy(4);
     setNumClusters(6);
     setNumChoices(5);
     setNumMoves(4);
-    setMaxGridOccupancy(4);
   }
 
   public int getNumAgents() {
@@ -46,7 +46,9 @@ public class Config {
   }
 
   public void setNumClusters(int numClusters) {
-    this.numClusters = clamp(1, INITIAL_AGENT_COLORS.length, numClusters);
+    //this.numClusters = clamp(1, INITIAL_AGENT_COLORS.length, numClusters);
+    int maxClusters = ceil(float(numAgents) / float(maxGridOccupancy));
+    this.numClusters = clamp(1, min(maxClusters, INITIAL_AGENT_COLORS.length), numClusters);
   }
 
   public int getNumChoices() {
