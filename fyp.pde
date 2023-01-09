@@ -38,13 +38,17 @@ void setup() {
   gameView.addListener(game);
   
   G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
-  G4P.setDisplayFont("Monospaced", G4P.PLAIN, 20);
+  G4P.setDisplayFont("Arial", G4P.PLAIN, 20);
   
   playButton = new GButton(this, 275, 200, 150, 50, "Pause");
   playButton.addEventHandler(this, "handlePlayButton");
   
   restartButton = new GButton(this, 275, 275, 150, 50, "Restart");
   restartButton.addEventHandler(this, "handleRestartButton");
+  
+  textSize(50);
+  textAlign(CENTER);
+  text("Focal Point Game Simulator", width/2, height/10);
 }
 
 void draw() {
