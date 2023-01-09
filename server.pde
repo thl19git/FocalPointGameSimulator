@@ -8,17 +8,19 @@ public class Server {
   private int framesForVotes;
   private int movementRounds;
   private int roundsRemaining;
+  private boolean paused;
   private GameStage stage;
   
   Server() {
     reset();
     createAgents();
-    stage = GameStage.START;
   }
   
   private void reset() {
     resetGridOccupancy();
     resetCounters();
+    paused = false;
+    stage = GameStage.START;
   }
   
   private void resetCounters() {
@@ -52,6 +54,10 @@ public class Server {
       Agent agent = new Agent(ID, randomPosition, positionInBox);
       agents.add(agent);
     }
+  }
+  
+  public void togglePaused() {
+    paused = !paused;
   }
   
   public ArrayList<Agent> getAgents() {
@@ -262,6 +268,10 @@ public class Server {
   }
   
   public void run() {
+    if (paused) {
+      return;
+    }
+    
     switch (stage) {
       case START:
         startStage();

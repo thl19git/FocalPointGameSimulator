@@ -19,6 +19,8 @@ Game game;
 Config config;
 Server server;
 
+GButton playButton;
+
 void setup() {
   frameRate(30);
   fullScreen(P2D,2);
@@ -35,6 +37,12 @@ void setup() {
   gameView = new GView(this, width/2, 3*(height-2*width/5)/5, 2*width/5, 2*width/5, P2D);
   game = new Game();
   gameView.addListener(game);
+  
+  G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
+  G4P.setDisplayFont("Monospaced", G4P.PLAIN, 20);
+  
+  playButton = new GButton(this, 275, 200, 150, 50, "Pause");
+  playButton.addEventHandler(this, "handlePlayButton");
 }
 
 void draw() {
