@@ -20,6 +20,7 @@ Config config;
 Server server;
 
 GButton playButton;
+GButton restartButton;
 
 void setup() {
   frameRate(30);
@@ -27,8 +28,6 @@ void setup() {
   background(100);
   
   cursor(CROSS);
-  
-  agentColors = INITIAL_AGENT_COLORS.clone();
   
   // game requires server, requires config
   config = new Config();
@@ -43,6 +42,9 @@ void setup() {
   
   playButton = new GButton(this, 275, 200, 150, 50, "Pause");
   playButton.addEventHandler(this, "handlePlayButton");
+  
+  restartButton = new GButton(this, 275, 275, 150, 50, "Restart");
+  restartButton.addEventHandler(this, "handleRestartButton");
 }
 
 void draw() {

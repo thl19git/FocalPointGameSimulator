@@ -13,14 +13,15 @@ public class Server {
   
   Server() {
     reset();
-    createAgents();
   }
   
   private void reset() {
+    agentColors = INITIAL_AGENT_COLORS.clone();
     resetGridOccupancy();
     resetCounters();
     paused = false;
     stage = GameStage.START;
+    createAgents();
   }
   
   private void resetCounters() {

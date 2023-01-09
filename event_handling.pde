@@ -6,3 +6,8 @@ public void handlePlayButton(GButton button, GEvent event) {
   }
   server.togglePaused();
 }
+
+public void handleRestartButton(GButton button, GEvent event) {
+  playButton.setText("Pause");
+  server.reset();
+}
