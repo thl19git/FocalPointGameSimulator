@@ -16,6 +16,9 @@ public class Game extends GViewListener {
       case CLUSTERING:
         drawClusteringStage(graphicsHandle);
         break;
+      case VOTING:
+        drawVotingStage(graphicsHandle);
+        break;
       default:
         println("Update called, stage: ", server.getStage());
     }
@@ -25,8 +28,12 @@ public class Game extends GViewListener {
     validate();
   }
   
+  private void drawVotingStage(PGraphics graphicsHandle) {
+    drawStaticAgents(graphicsHandle, true);
+  }
+  
   private void drawClusteringStage(PGraphics graphicsHandle) {
-    drawStaticAgents(graphicsHandle);
+    drawStaticAgents(graphicsHandle, false);
   }
   
   private void drawAgentsMovingStage(PGraphics graphicsHandle) {
@@ -34,7 +41,7 @@ public class Game extends GViewListener {
   }
   
   private void drawMoveDecisionStage(PGraphics graphicsHandle) {
-    drawStaticAgents(graphicsHandle);
+    drawStaticAgents(graphicsHandle, false);
   }
   
   private void drawGrid(PGraphics graphicsHandle) {
@@ -106,7 +113,7 @@ public class Game extends GViewListener {
     return exactXPosition(xCoord, boxPosition, occupancy);
   }
   
-  private void drawStaticAgent(PGraphics graphicsHandle, Agent agent) {
+  private void drawStaticAgent(PGraphics graphicsHandle, Agent agent, color outlineColor) {
     GridPosition position = agent.getGridPosition();
     int boxPosition = agent.getPositionInBox();
      
@@ -122,13 +129,23 @@ public class Game extends GViewListener {
     
     color agentColor = agentColors[agent.getClusterNumber()];
     
-    drawAgent(graphicsHandle, xPosition, yPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor);
+    drawAgent(graphicsHandle, xPosition, yPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor, outlineColor);
   }
   
-  private void drawStaticAgents(PGraphics graphicsHandle) {
+  private void drawStaticAgents(PGraphics graphicsHandle, boolean showVoteResults) {
     ArrayList<Agent> agents = server.getAgents();
     for (Agent agent : agents) {
-      drawStaticAgent(graphicsHandle, agent);
+      color outlineColor = BLACK;
+      if (showVoteResults) {
+        int cluster = agent.getClusterNumber();
+        boolean result = server.getClusterResult(cluster);
+        if (result) {
+          outlineColor = WIN_COLOR;
+        } else {
+          outlineColor = LOSE_COLOR;
+        }
+      }
+      drawStaticAgent(graphicsHandle, agent, outlineColor);
     }
   }
   
@@ -157,7 +174,7 @@ public class Game extends GViewListener {
     
     color agentColor = agentColors[agent.getClusterNumber()];
       
-    drawAgent(graphicsHandle, movingXPosition, movingYPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor);
+    drawAgent(graphicsHandle, movingXPosition, movingYPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor, BLACK);
   }
   
   private void drawMovingAgents(PGraphics graphicsHandle) {
@@ -171,8 +188,9 @@ public class Game extends GViewListener {
     return position + (1 + AGENT_MOVE_FRAMES - server.getFramesToMove()) * (nextPosition - position) / AGENT_MOVE_FRAMES;
   }
   
-  private void drawAgent(PGraphics graphicsHandle, float xPosition, float yPosition, float size, color agentColor) {
+  private void drawAgent(PGraphics graphicsHandle, float xPosition, float yPosition, float size, color agentColor, color outlineColor) {
     graphicsHandle.strokeWeight(3);
+    graphicsHandle.stroke(outlineColor);
     graphicsHandle.fill(agentColor);
     graphicsHandle.circle(xPosition, yPosition, size);
     graphicsHandle.noFill();

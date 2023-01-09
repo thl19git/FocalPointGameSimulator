@@ -170,6 +170,10 @@ public class Server {
     distributeVoteResults();
   }
   
+  public boolean getClusterResult(int cluster) {
+    return voteResults[cluster];
+  }
+  
   private void startStage() {
     stage = GameStage.MOVE_DECISION;
   }
@@ -229,6 +233,7 @@ public class Server {
   private void votingStage() {
     if (framesForVotes == SHOW_VOTES_FRAMES) {
       conductVote();
+      game.update();
     }
     framesForVotes--;
     if (framesForVotes == 0) {
