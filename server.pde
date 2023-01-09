@@ -7,16 +7,26 @@ public class Server {
   private int framesForClustering;
   private int framesForVotes;
   private int movementRounds;
+  private int roundsRemaining;
   private GameStage stage;
   
   Server() {
-    resetGridOccupancy();
+    reset();
     createAgents();
+    stage = GameStage.START;
+  }
+  
+  private void reset() {
+    resetGridOccupancy();
+    resetCounters();
+  }
+  
+  private void resetCounters() {
     framesToMove = AGENT_MOVE_FRAMES;
     framesForClustering = SHOW_CLUSTERING_FRAMES;
     framesForVotes = SHOW_VOTES_FRAMES;
     movementRounds = config.getNumMoves();
-    stage = GameStage.START;
+    roundsRemaining = config.getNumRounds();
   }
   
   private void resetGridOccupancy() {
@@ -175,7 +185,12 @@ public class Server {
   }
   
   private void startStage() {
-    stage = GameStage.MOVE_DECISION;
+    roundsRemaining--;
+    if (roundsRemaining > 0) {
+      stage = GameStage.MOVE_DECISION;
+    } else {
+      stage = GameStage.FINISH;
+    }
   }
   
   private void moveDecisionStage() {
@@ -237,7 +252,7 @@ public class Server {
     }
     framesForVotes--;
     if (framesForVotes == 0) {
-      stage = GameStage.MOVE_DECISION;
+      stage = GameStage.START;
       framesForVotes = SHOW_VOTES_FRAMES;
     }
   }
