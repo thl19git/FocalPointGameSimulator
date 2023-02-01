@@ -38,6 +38,7 @@ public void updateCentroidsAndClusters(ArrayList<Agent> agents, GridPosition[] c
     }
     
     if (!assignmentChanged) {
+      server.updateClusterSizes(agentsPerCluster);
       break;
     }
     

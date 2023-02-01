@@ -11,6 +11,10 @@ public class Server {
   private boolean paused;
   private GameStage stage;
   
+  private int[] clusterSizes;
+  private int[] runningClusterSizes;
+  private int[] runningWins;
+  
   Server() {
     reset();
   }
@@ -19,6 +23,7 @@ public class Server {
     agentColors = INITIAL_AGENT_COLORS.clone();
     resetGridOccupancy();
     resetCounters();
+    resetRunningStats();
     paused = false;
     stage = GameStage.START;
     createAgents();
@@ -35,6 +40,11 @@ public class Server {
   private void resetGridOccupancy() {
     int gridSize = config.getGridSize();
     gridOccupancy = new int[gridSize*gridSize];
+  }
+  
+  private void resetRunningStats() {
+    runningClusterSizes = new int[config.getNumAgents()];
+    runningWins = new int[config.getNumAgents()];
   }
   
   private void createAgents() {
@@ -67,6 +77,10 @@ public class Server {
   
   public int getFramesToMove() {
     return framesToMove;
+  }
+  
+  public void updateClusterSizes(int[] sizes) {
+    clusterSizes = sizes.clone();
   }
   
   private ArrayList<GridPosition> getValidPositions(GridPosition position) {
@@ -185,10 +199,29 @@ public class Server {
     gatherVotes(votes);
     calculateVoteResults(votes);
     distributeVoteResults();
+    updateRunningStats();
   }
   
   public boolean getClusterResult(int cluster) {
     return voteResults[cluster];
+  }
+  
+  private void updateRunningStats() {
+    for (int cluster = 0; cluster < config.getNumClusters(); cluster++) {
+      runningClusterSizes[clusterSizes[cluster]]++;
+      if (voteResults[cluster]) {
+        runningWins[clusterSizes[cluster]]++;
+      }
+    }
+  }
+  
+  private void printOverallStats() {
+    for (int index = 0; index < config.getNumAgents(); index++) {
+      int numClusters = runningClusterSizes[index];
+      if (numClusters > 0) {
+        println("Cluster size: ", index, ", num clusters: ", numClusters, ", wins: ", runningWins[index]);
+      }
+    }
   }
   
   private void startStage() {
@@ -196,6 +229,7 @@ public class Server {
     if (roundsRemaining > 0) {
       stage = GameStage.MOVE_DECISION;
     } else {
+      printOverallStats();
       stage = GameStage.FINISH;
     }
   }
@@ -265,7 +299,7 @@ public class Server {
   }
   
   private void finishStage() {
-    
+   
   }
   
   public void run() {
