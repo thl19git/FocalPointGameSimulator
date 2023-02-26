@@ -70,7 +70,8 @@ public class Agent {
   
   // Must return a number in the range [1..numChoices]
   public int voteForChoice(int numChoices) {
-    return round(random(numChoices));
+    int choice = ceil(random(numChoices));
+    return choice;
   }
   
   public void receiveVoteResult(boolean result) {

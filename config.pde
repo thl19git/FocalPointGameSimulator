@@ -6,15 +6,17 @@ public class Config {
   private int numChoices;
   private int numMoves;
   private int maxGridOccupancy;
+  private Subgame subgame;
   
   Config() {
     setGridSize(10);
-    setNumAgents(50);
+    setNumAgents(30);
     setNumRounds(10);
     setMaxGridOccupancy(4);
     setNumClusters(6);
-    setNumChoices(5);
+    setNumChoices(4);
     setNumMoves(4);
+    setSubgame(Subgame.MAJORITY);
   }
 
   public int getNumAgents() {
@@ -73,5 +75,13 @@ public class Config {
   
   public void setMaxGridOccupancy(int maxGridOccupancy) {
     this.maxGridOccupancy = clamp(1, 4, maxGridOccupancy);
+  }
+  
+  public Subgame getSubgame() {
+    return subgame;
+  }
+  
+  public void setSubgame(Subgame subgame) {
+    this.subgame = subgame;
   }
 }

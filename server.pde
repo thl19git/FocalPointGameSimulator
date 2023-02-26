@@ -2,7 +2,7 @@ public class Server {
   private ArrayList<Agent> agents;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
-  private boolean[] voteResults;
+  private HashMap<Integer, Boolean> voteResults;
   private int framesToMove;
   private int framesForClustering;
   private int framesForVotes;
@@ -10,20 +10,18 @@ public class Server {
   private int roundsRemaining;
   private boolean paused;
   private GameStage stage;
-  
-  private int[] clusterSizes;
-  private int[] runningClusterSizes;
-  private int[] runningWins;
+  private SubgameHandler subgameHandler;
   
   Server() {
     reset();
+    subgameHandler = new SubgameHandler();
   }
   
   private void reset() {
     agentColors = INITIAL_AGENT_COLORS.clone();
     resetGridOccupancy();
     resetCounters();
-    resetRunningStats();
+    //resetRunningStats();
     paused = false;
     stage = GameStage.START;
     createAgents();
@@ -40,11 +38,6 @@ public class Server {
   private void resetGridOccupancy() {
     int gridSize = config.getGridSize();
     gridOccupancy = new int[gridSize*gridSize];
-  }
-  
-  private void resetRunningStats() {
-    runningClusterSizes = new int[config.getNumAgents()];
-    runningWins = new int[config.getNumAgents()];
   }
   
   private void createAgents() {
@@ -77,10 +70,6 @@ public class Server {
   
   public int getFramesToMove() {
     return framesToMove;
-  }
-  
-  public void updateClusterSizes(int[] sizes) {
-    clusterSizes = sizes.clone();
   }
   
   private ArrayList<GridPosition> getValidPositions(GridPosition position) {
@@ -161,67 +150,32 @@ public class Server {
     return stage;
   }
   
-  private void gatherVotes(ArrayList<HashSet<Integer>> votes) {
+  private void gatherVotes(HashMap<Integer, Integer> votes) {
     int choices = config.getNumChoices();
     for (Agent agent : agents) {
-      int agentCluster = agent.getClusterNumber();
       int vote = agent.voteForChoice(choices);
-      votes.get(agentCluster).add(vote);
-    }
-  }
-  
-  private void calculateVoteResults(ArrayList<HashSet<Integer>> votes) {
-    int clusters = config.getNumClusters();
-    voteResults = new boolean[clusters];
-    
-    for (int cluster = 0; cluster < clusters; cluster++) {
-      voteResults[cluster] = votes.get(cluster).size() == 1;
+      votes.put(agent.getID(), vote);
     }
   }
   
   private void distributeVoteResults() {
     for (Agent agent : agents) {
-      int cluster = agent.getClusterNumber();
-      boolean result = voteResults[cluster];
+      int ID = agent.getID();
+      boolean result = voteResults.get(ID);
       agent.receiveVoteResult(result);
     }
   }
   
   private void conductVote() {
     int clusters = config.getNumClusters();
-    ArrayList<HashSet<Integer>> votes = new ArrayList<HashSet<Integer>>();
-    
-    for (int cluster = 0; cluster < clusters; cluster++) {
-      HashSet<Integer> set = new HashSet<Integer>();
-      votes.add(set);
-    }
-    
+    HashMap<Integer, Integer> votes = new HashMap<Integer, Integer>();
     gatherVotes(votes);
-    calculateVoteResults(votes);
+    voteResults = subgameHandler.computeResults(clusters, config.getNumChoices(), agents, votes);
     distributeVoteResults();
-    updateRunningStats();
   }
   
-  public boolean getClusterResult(int cluster) {
-    return voteResults[cluster];
-  }
-  
-  private void updateRunningStats() {
-    for (int cluster = 0; cluster < config.getNumClusters(); cluster++) {
-      runningClusterSizes[clusterSizes[cluster]]++;
-      if (voteResults[cluster]) {
-        runningWins[clusterSizes[cluster]]++;
-      }
-    }
-  }
-  
-  private void printOverallStats() {
-    for (int index = 0; index < config.getNumAgents(); index++) {
-      int numClusters = runningClusterSizes[index];
-      if (numClusters > 0) {
-        println("Cluster size: ", index, ", num clusters: ", numClusters, ", wins: ", runningWins[index]);
-      }
-    }
+  public boolean getAgentResult(int ID) {
+    return voteResults.get(ID);
   }
   
   private void startStage() {
@@ -229,7 +183,7 @@ public class Server {
     if (roundsRemaining > 0) {
       stage = GameStage.MOVE_DECISION;
     } else {
-      printOverallStats();
+      //printOverallStats();
       stage = GameStage.FINISH;
     }
   }
@@ -276,7 +230,7 @@ public class Server {
   
   private void clusteringStage() {
     if (framesForClustering == SHOW_CLUSTERING_FRAMES) {
-      kMeansClustering(agents);
+      kMeansClustering(config.getNumClusters(), agents);
       game.update();
     }
     framesForClustering--;

@@ -1,6 +1,5 @@
-public void kMeansClustering(ArrayList<Agent> agents) {
+public void kMeansClustering(int clusters, ArrayList<Agent> agents) {
   HashSet<GridPosition> centroidSet = new HashSet<GridPosition>();
-  int clusters = config.getNumClusters();
   
   // Performance degrades as clusters / gridSize increases, but okay for now (ensures unique centroids initially)
   while (centroidSet.size() < clusters) {
@@ -9,12 +8,10 @@ public void kMeansClustering(ArrayList<Agent> agents) {
   GridPosition[] centroids = new GridPosition[clusters];
   centroidSet.toArray(centroids);
   
-  updateCentroidsAndClusters(agents, centroids);
+  updateCentroidsAndClusters(clusters, agents, centroids);
 }
 
-public void updateCentroidsAndClusters(ArrayList<Agent> agents, GridPosition[] centroids) {
-  int clusters = config.getNumClusters();
-  
+public void updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, GridPosition[] centroids) {
   while (true) {
     boolean assignmentChanged = false;
     
@@ -38,7 +35,6 @@ public void updateCentroidsAndClusters(ArrayList<Agent> agents, GridPosition[] c
     }
     
     if (!assignmentChanged) {
-      server.updateClusterSizes(agentsPerCluster);
       break;
     }
     

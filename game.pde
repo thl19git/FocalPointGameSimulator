@@ -137,8 +137,8 @@ public class Game extends GViewListener {
     for (Agent agent : agents) {
       color outlineColor = BLACK;
       if (showVoteResults) {
-        int cluster = agent.getClusterNumber();
-        boolean result = server.getClusterResult(cluster);
+        int ID = agent.getID();
+        boolean result = server.getAgentResult(ID);
         if (result) {
           outlineColor = WIN_COLOR;
         } else {
