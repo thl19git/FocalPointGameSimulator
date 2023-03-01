@@ -8,15 +8,15 @@ public class Config {
   private int maxGridOccupancy;
   private Subgame subgame;
   
-  Config() {
-    setGridSize(10);
-    setNumAgents(30);
-    setNumRounds(10);
-    setMaxGridOccupancy(4);
-    setNumClusters(6);
-    setNumChoices(4);
-    setNumMoves(4);
-    setSubgame(Subgame.MAJORITY);
+  Config(int newGridSize, int newNumAgents, int newNumRounds, int newGridOccupancy, int newNumClusters, int newNumChoices, int newNumMoves, Subgame newSubgame) {
+    setGridSize(newGridSize);
+    setNumAgents(newNumAgents);
+    setNumRounds(newNumRounds);
+    setMaxGridOccupancy(newGridOccupancy);
+    setNumClusters(newNumClusters);
+    setNumChoices(newNumChoices);
+    setNumMoves(newNumMoves);
+    setSubgame(newSubgame);
   }
 
   public int getNumAgents() {
@@ -74,7 +74,8 @@ public class Config {
   }
   
   public void setMaxGridOccupancy(int maxGridOccupancy) {
-    this.maxGridOccupancy = clamp(1, 4, maxGridOccupancy);
+    int minOccupancy = ceil(this.numAgents * 2 / float(this.gridSize * this.gridSize));
+    this.maxGridOccupancy = clamp(minOccupancy, 4, maxGridOccupancy);
   }
   
   public Subgame getSubgame() {

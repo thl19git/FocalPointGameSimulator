@@ -18,7 +18,7 @@ public class Server {
   }
   
   private void reset() {
-    agentColors = INITIAL_AGENT_COLORS.clone();
+    agentColors = INITIAL_AGENT_COLORS.clone(); //global variable, not local
     resetGridOccupancy();
     resetCounters();
     //resetRunningStats();

@@ -1,7 +1,14 @@
-enum Subgame {
+public enum Subgame {
   CONSENSUS, // All agents need to pick same option - all get reward
   MAJORITY // >50% of agents need to pick same option - all get reward
 }
+
+/* To add a new subgame:
+ * 1. Add the game to the Enum above
+ * 2. Add the string corresponding to the enum value to the subgames array in FYP
+ * 3. Add a method to SubgameHandler, similar to consensusGame, that implements the game
+ * 4. Add the game to the switch statement in computeResults (SubgameHandler method)
+ */
 
 public class SubgameHandler {
   
