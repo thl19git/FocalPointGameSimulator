@@ -14,8 +14,9 @@ final color[] INITIAL_AGENT_COLORS = {color(128,0,128), color(128, 128, 0), colo
 final color BLACK = color(0,0,0);
 final color WIN_COLOR = color(0,255,0);
 final color LOSE_COLOR = color(255,0,0);
+final String[] SUBGAMES = {"CONSENSUS","MAJORITY"};
 color[] agentColors;
-String[] subgames = {"CONSENSUS","MAJORITY"};
+
 
 GView gameView;
 Game game;
@@ -46,18 +47,17 @@ GTextField createTextField(int xPos, int yPos, int min, int max, int def) {
 void drawText() {
   textSize(50);
   textAlign(CENTER);
-  text("Focal Point Game Simulator", width/2, height/10);
+  text("Focal Point Game Simulator", width/2, height/15);
   
-  textAlign(LEFT);
   textSize(25);
-  text("Agents", 140, 370);
-  text("Grid Size", 140, 420);
-  text("Rounds", 140, 470);
-  text("Clusters", 140, 520);
-  text("Choices", 140, 570);
-  text("Moves", 140, 620);
-  text("Occupancy", 140, 670);
-  text("Subgame", 140, 720);
+  text("Agents", 385, 120);
+  text("Grid Size", 535, 120);
+  text("Rounds", 685, 120);
+  text("Clusters", 835, 120);
+  text("Choices", 985, 120);
+  text("Moves", 1135, 120);
+  text("Occupancy", 1285, 120);
+  text("Subgame", 1485, 120);
 }
 
 void setup() {
@@ -71,29 +71,29 @@ void setup() {
   config = new Config(10, 30, 10, 4, 6, 4, 4, Subgame.CONSENSUS); // Default settings
   server = new Server();
   
-  gameView = new GView(this, width/2, 3*(height-2*width/5)/5, 2*width/5, 2*width/5, P2D);
+  gameView = new GView(this, width/20, 7*height/27, 2*width/5, 2*width/5, P2D);
   game = new Game();
   gameView.addListener(game);
   
   G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
   G4P.setDisplayFont("Arial", G4P.PLAIN, 20);
   
-  playButton = new GButton(this, 275, 200, 150, 50, "Pause");
+  playButton = new GButton(this, 770, 200, 150, 50, "Pause");
   playButton.addEventHandler(this, "handlePlayButton");
   
-  restartButton = new GButton(this, 275, 275, 150, 50, "Restart");
+  restartButton = new GButton(this, 1000, 200, 150, 50, "Restart");
   restartButton.addEventHandler(this, "handleRestartButton");
   
-  numAgentsField = createTextField(275, 350, 1, 100, 30);
-  gridSizeField = createTextField(275, 400, 3, 10, 10);
-  numRoundsField = createTextField(275, 450, 1, 1000, 10);
-  numClustersField = createTextField(275, 500, 1, 6, 5);
-  numChoicesField = createTextField(275, 550, 1, 1000, 4);
-  numMovesField = createTextField(275, 600, 1, 20, 4);
-  occupancyField = createTextField(275, 650, 1, 4, 4);
+  numAgentsField = createTextField(355, 140, 1, 100, 30);
+  gridSizeField = createTextField(505, 140, 3, 10, 10);
+  numRoundsField = createTextField(655, 140, 1, 1000, 10);
+  numClustersField = createTextField(805, 140, 1, 6, 5);
+  numChoicesField = createTextField(955, 140, 1, 1000, 4);
+  numMovesField = createTextField(1105, 140, 1, 20, 4);
+  occupancyField = createTextField(1255, 140, 1, 4, 4);
   
-  subgameDroplist = new GDropList(this,275,700,160,150);
-  subgameDroplist.setItems(subgames, 0);
+  subgameDroplist = new GDropList(this,1405,140,160,150);
+  subgameDroplist.setItems(SUBGAMES, 0);
   
   drawText();
 }
