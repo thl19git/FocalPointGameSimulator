@@ -11,10 +11,13 @@ public class Server {
   private boolean paused;
   private GameStage stage;
   private SubgameHandler subgameHandler;
+  private DataLogger dataLogger;
+  private boolean savedJSON;
   
   Server() {
-    reset();
+    dataLogger = new DataLogger();
     subgameHandler = new SubgameHandler();
+    reset();
   }
   
   private void reset() {
@@ -25,6 +28,9 @@ public class Server {
     paused = false;
     stage = GameStage.START;
     createAgents();
+    dataLogger.init();
+    dataLogger.logConfig(config);
+    savedJSON = false;
   }
   
   private void resetCounters() {
@@ -172,6 +178,7 @@ public class Server {
     gatherVotes(votes);
     voteResults = subgameHandler.computeResults(clusters, config.getNumChoices(), agents, votes);
     distributeVoteResults();
+    dataLogger.logRound(agents, votes, voteResults, config.getNumClusters());
   }
   
   public boolean getAgentResult(int ID) {
@@ -253,7 +260,10 @@ public class Server {
   }
   
   private void finishStage() {
-   
+    if (!savedJSON) {
+      dataLogger.saveJSON();
+      savedJSON = true;
+    }
   }
   
   public void run() {

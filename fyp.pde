@@ -87,7 +87,7 @@ void setup() {
   numAgentsField = createTextField(355, 140, 1, 100, 30);
   gridSizeField = createTextField(505, 140, 3, 10, 10);
   numRoundsField = createTextField(655, 140, 1, 1000, 10);
-  numClustersField = createTextField(805, 140, 1, 6, 5);
+  numClustersField = createTextField(805, 140, 1, 6, 6);
   numChoicesField = createTextField(955, 140, 1, 1000, 4);
   numMovesField = createTextField(1105, 140, 1, 20, 4);
   occupancyField = createTextField(1255, 140, 1, 4, 4);
