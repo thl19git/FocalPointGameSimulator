@@ -1,4 +1,5 @@
 import g4p_controls.*;
+import org.gicentre.utils.stat.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ color[] agentColors;
 
 GView gameView;
 Game game;
+DataVisualiser dataVisualiser;
 Config config;
 Server server;
 
@@ -62,7 +64,7 @@ void drawText() {
 
 void setup() {
   frameRate(30);
-  fullScreen(P2D,2);
+  fullScreen(P2D,1);
   background(100);
   
   cursor(CROSS);
@@ -71,9 +73,11 @@ void setup() {
   config = new Config(10, 30, 10, 4, 6, 4, 4, Subgame.CONSENSUS); // Default settings
   server = new Server();
   
-  gameView = new GView(this, width/20, 7*height/27, 2*width/5, 2*width/5, P2D);
+  gameView = new GView(this, width/15, 7*height/27, 2*width/5, 2*width/5, P2D);
   game = new Game();
   gameView.addListener(game);
+  
+  dataVisualiser = new DataVisualiser(this, 8*width/15, 7*height/27, 2*width/5, 2*width/5);
   
   G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
   G4P.setDisplayFont("Arial", G4P.PLAIN, 20);
@@ -101,5 +105,6 @@ void setup() {
 void draw() {
   background(100);
   drawText();
+  dataVisualiser.update();
   server.run();
 }

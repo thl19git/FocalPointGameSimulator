@@ -237,7 +237,8 @@ public class Server {
   
   private void clusteringStage() {
     if (framesForClustering == SHOW_CLUSTERING_FRAMES) {
-      kMeansClustering(config.getNumClusters(), agents);
+      int[] agentsPerCluster = kMeansClustering(config.getNumClusters(), agents);
+      dataVisualiser.updateClusterCounts(agentsPerCluster);
       game.update();
     }
     framesForClustering--;

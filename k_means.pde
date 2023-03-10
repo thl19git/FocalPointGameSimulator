@@ -1,4 +1,4 @@
-public void kMeansClustering(int clusters, ArrayList<Agent> agents) {
+public int[] kMeansClustering(int clusters, ArrayList<Agent> agents) {
   HashSet<GridPosition> centroidSet = new HashSet<GridPosition>();
   
   // Performance degrades as clusters / gridSize increases, but okay for now (ensures unique centroids initially)
@@ -8,16 +8,17 @@ public void kMeansClustering(int clusters, ArrayList<Agent> agents) {
   GridPosition[] centroids = new GridPosition[clusters];
   centroidSet.toArray(centroids);
   
-  updateCentroidsAndClusters(clusters, agents, centroids);
+  return updateCentroidsAndClusters(clusters, agents, centroids);
 }
 
-public void updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, GridPosition[] centroids) {
+public int[] updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, GridPosition[] centroids) {
+  int[] agentsPerCluster;
   while (true) {
     boolean assignmentChanged = false;
     
     int[] xPositions = new int[clusters];
     int[] yPositions = new int[clusters];
-    int[] agentsPerCluster = new int[clusters];
+    agentsPerCluster = new int[clusters];
     
     for (Agent agent : agents) {
       int newCluster = assignCluster(agent.getGridPosition(), centroids);
@@ -49,6 +50,7 @@ public void updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, Gr
     }
   }
   sortColors(centroids); // Reduces amount of color switching (not perfect but better than nothing)
+  return agentsPerCluster;
 }
 
 public void sortColors(GridPosition[] centroids) {
