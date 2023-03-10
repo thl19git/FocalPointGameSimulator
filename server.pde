@@ -21,7 +21,7 @@ public class Server {
   }
   
   private void reset() {
-    agentColors = INITIAL_AGENT_COLORS.clone(); //global variable, not local
+    agentColors = INITIAL_AGENT_COLORS.clone(); // global variable, not local
     resetGridOccupancy();
     resetCounters();
     //resetRunningStats();
@@ -31,6 +31,7 @@ public class Server {
     dataLogger.init();
     dataLogger.logConfig(config);
     savedJSON = false;
+    dataVisualiser.reset(); // global object, not local
   }
   
   private void resetCounters() {
