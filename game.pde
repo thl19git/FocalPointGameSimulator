@@ -5,6 +5,7 @@ public class Game extends GViewListener {
     graphicsHandle.background(255);
     
     drawGrid(graphicsHandle);
+    drawMonuments(graphicsHandle);
     
     switch (server.getStage()) {
       case MOVE_DECISION:
@@ -52,6 +53,28 @@ public class Game extends GViewListener {
     for (float position = gap; position < width() - gap / 2; position += gap) {
       graphicsHandle.line(position, 0, position, height());
       graphicsHandle.line(0, position, width(), position);
+    }
+  }
+  
+  private void drawMonument(PGraphics graphicsHandle, Monument monument) {
+    GridPosition position = monument.getPosition();
+    float xCoord = position.getX();
+    float yCoord = position.getY();
+    float gap = float(width()) / float(config.getGridSize());
+    graphicsHandle.stroke(color(0,0,0));
+    graphicsHandle.strokeWeight(3);
+    graphicsHandle.fill(0);
+    graphicsHandle.quad(gap * (xCoord + 0.375), gap * (yCoord + 0.25), gap * (xCoord + 0.625), gap * (yCoord + 0.25), gap * (xCoord + 0.75), gap * (yCoord + 0.75), gap * (xCoord + 0.25), gap * (yCoord + 0.75));
+    graphicsHandle.textAlign(CENTER, CENTER);
+    graphicsHandle.fill(255);
+    graphicsHandle.textSize(20);
+    graphicsHandle.text(monument.getText(), gap * (xCoord + 0.5), gap * (yCoord + 0.5));
+  }
+  
+  private void drawMonuments(PGraphics graphicsHandle) {
+    ArrayList<Monument> monuments = server.getMonuments();
+    for (Monument monument : monuments) {
+      drawMonument(graphicsHandle, monument);
     }
   }
   

@@ -27,6 +27,13 @@ public class GridPosition implements Comparable<GridPosition>{
     return y;
   }
   
+  public float distanceTo(GridPosition position) {
+    int diffX = abs(this.x - position.getX());
+    int diffY = abs(this.y - position.getY());
+    
+    return sqrt(diffX*diffX + diffY*diffY);
+  }
+  
   @Override
   public int compareTo(GridPosition position) {
     if (position.getY() == this.y) {
@@ -42,5 +49,20 @@ public class GridPosition implements Comparable<GridPosition>{
     } else {
       return 1;
     }
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == this)
+      return true;
+    if (!(o instanceof GridPosition))
+      return false;
+    GridPosition other = (GridPosition) o;
+    return this.x == other.getX() && this.y== other.getY();
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.x, this.y);
   }
 }

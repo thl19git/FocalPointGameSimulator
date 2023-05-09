@@ -1,5 +1,7 @@
 public class Server {
   private ArrayList<Agent> agents;
+  private ArrayList<Monument> monuments;
+  private HashSet<GridPosition> monumentPositions;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
   private HashMap<Integer, Boolean> voteResults;
@@ -28,6 +30,7 @@ public class Server {
     paused = false;
     stage = GameStage.START;
     createAgents();
+    createMonuments();
     dataLogger.init();
     dataLogger.logConfig(config);
     savedJSON = false;
@@ -67,12 +70,36 @@ public class Server {
     }
   }
   
+  private void createMonuments() {
+    monuments = new ArrayList<Monument>();
+    monumentPositions = new HashSet<GridPosition>();
+    
+    for (int index = 0; index < config.getNumMonuments(); index++) {
+      GridPosition randomPosition;
+      
+      while (true) {
+        randomPosition = randomGridPosition();
+        if (!monumentPositions.contains(randomPosition)) {
+          break;
+        }
+      }
+      
+      Monument monument = new Monument(randomPosition,"Hi",5); //todo - create default view distance, text
+      monuments.add(monument);
+      monumentPositions.add(randomPosition);
+    }
+  }
+  
   public void togglePaused() {
     paused = !paused;
   }
   
   public ArrayList<Agent> getAgents() {
     return agents;
+  }
+  
+  public ArrayList<Monument> getMonuments() {
+    return monuments;
   }
   
   public int getFramesToMove() {
@@ -160,7 +187,7 @@ public class Server {
   private void gatherVotes(HashMap<Integer, Integer> votes) {
     int choices = config.getNumChoices();
     for (Agent agent : agents) {
-      int vote = agent.voteForChoice(choices);
+      int vote = agent.voteForChoice(choices, monumentsVisibleForAgent(agent));
       votes.put(agent.getID(), vote);
     }
   }
@@ -179,6 +206,7 @@ public class Server {
     gatherVotes(votes);
     voteResults = subgameHandler.computeResults(clusters, config.getNumChoices(), agents, votes);
     distributeVoteResults();
+    handleMonumentEditing(); //Agents can update monuments after receiving game results
     dataLogger.logRound(agents, votes, voteResults, config.getNumClusters());
   }
   
@@ -186,9 +214,38 @@ public class Server {
     return voteResults.get(ID);
   }
   
+  private ArrayList<Monument> monumentsVisibleForAgent(Agent agent) {
+    ArrayList<Monument> visibleMonuments = new ArrayList<Monument>();
+    for (Monument monument : monuments) {
+      if (monument.canBeSeen(agent.getGridPosition())) {
+        visibleMonuments.add(monument);
+      }
+    }
+    return visibleMonuments;
+  }
+  
+  private void handleMonumentViewing() {
+    for (Agent agent : agents) {
+      agent.viewMonuments(monumentsVisibleForAgent(agent));
+    }
+  }
+  
+  private void handleMonumentEditing() {
+    for (Agent agent : agents) {
+      if (monumentPositions.contains(agent.getGridPosition())) {
+        for (Monument monument : monuments) {
+          if (monument.getPosition().equals(agent.getGridPosition())) {
+            agent.editMonument(monument);
+            break;
+          }
+        }
+      }
+    }
+  }
+  
   private void startStage() {
-    roundsRemaining--;
     if (roundsRemaining > 0) {
+      roundsRemaining--;
       stage = GameStage.MOVE_DECISION;
     } else {
       //printOverallStats();
@@ -228,10 +285,12 @@ public class Server {
   
   private void communicationStage() {
     movementRounds--;
-    if (movementRounds == 0) {
+    if (movementRounds == 0) { // Monument viewing happens during vote
       stage = GameStage.CLUSTERING;
       movementRounds = config.getNumMoves();
     } else {
+      handleMonumentViewing();
+      handleMonumentEditing();
       stage = GameStage.MOVE_DECISION;
     }
   }

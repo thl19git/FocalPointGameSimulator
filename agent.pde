@@ -69,7 +69,8 @@ public class Agent {
   }
   
   // Must return a number in the range [1..numChoices]
-  public int voteForChoice(int numChoices) {
+  public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
+    //println("Choosing, can see " + visibleMonuments.size() + " monuments");
     int choice = ceil(random(numChoices));
     return choice;
   }
@@ -77,6 +78,21 @@ public class Agent {
   public void receiveVoteResult(boolean result) {
     if (result == true) {
        println(ID, " - winner!");
+    }
+  }
+  
+  public void viewMonuments(ArrayList<Monument> monuments) {
+    //println("I can see " + monuments.size() + " monuments");
+  }
+  
+  public void editMonument(Monument monument) {
+    if ((ceil(random(10))) == 10) { //10% chance of updating a monument
+      if (monument.getText().equals("Hi")) {
+        monument.setText("Lo");
+      } else {
+        monument.setText("Hi");
+      }
+      println("Updated a monument!");
     }
   }
 }

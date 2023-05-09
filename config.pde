@@ -6,9 +6,10 @@ public class Config {
   private int numChoices;
   private int numMoves;
   private int maxGridOccupancy;
+  private int numMonuments;
   private Subgame subgame;
   
-  Config(int newGridSize, int newNumAgents, int newNumRounds, int newGridOccupancy, int newNumClusters, int newNumChoices, int newNumMoves, Subgame newSubgame) {
+  Config(int newGridSize, int newNumAgents, int newNumRounds, int newGridOccupancy, int newNumClusters, int newNumChoices, int newNumMoves, int newNumMonuments, Subgame newSubgame) {
     setGridSize(newGridSize);
     setNumAgents(newNumAgents);
     setNumRounds(newNumRounds);
@@ -16,6 +17,7 @@ public class Config {
     setNumClusters(newNumClusters);
     setNumChoices(newNumChoices);
     setNumMoves(newNumMoves);
+    setNumMonuments(newNumMonuments);
     setSubgame(newSubgame);
   }
 
@@ -76,6 +78,15 @@ public class Config {
   public void setMaxGridOccupancy(int maxGridOccupancy) {
     int minOccupancy = ceil(this.numAgents * 2 / float(this.gridSize * this.gridSize));
     this.maxGridOccupancy = clamp(minOccupancy, 4, maxGridOccupancy);
+  }
+  
+  public int getNumMonuments() {
+    return numMonuments;
+  }
+  
+  public void setNumMonuments(int numMonuments) {
+    int maxMonuments = this.gridSize * this.gridSize / 2;
+    this.numMonuments = clamp(0, numMonuments, maxMonuments);
   }
   
   public Subgame getSubgame() {
