@@ -1,10 +1,10 @@
 public class Agent {
-  private final int ID;
-  private GridPosition gridPosition;
+  protected final int ID;
+  protected GridPosition gridPosition;
   private GridPosition nextGridPosition;
   private int positionInBox;
   private int nextPositionInBox;
-  private int clusterNumber;
+  protected int clusterNumber;
   
   Agent(int ID, GridPosition gridPosition, int positionInBox) {
     this.ID = ID;

@@ -65,7 +65,8 @@ public class Server {
 
       incrementGridOccupancy(randomPosition);
       int positionInBox = gridOccupancyAtPosition(randomPosition);
-      Agent agent = new Agent(ID, randomPosition, positionInBox);
+      //Agent agent = new Agent(ID, randomPosition, positionInBox);
+      Agent agent = new SmarterAgent(ID, randomPosition, positionInBox); //Let's see how this lot does!!
       agents.add(agent);
     }
   }
