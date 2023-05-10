@@ -1,7 +1,6 @@
 public class Server {
   private ArrayList<Agent> agents;
-  private ArrayList<Monument> monuments;
-  private HashSet<GridPosition> monumentPositions;
+  private HashMap<GridPosition, Monument> monuments;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
   private HashMap<Integer, Boolean> voteResults;
@@ -72,22 +71,20 @@ public class Server {
   }
   
   private void createMonuments() {
-    monuments = new ArrayList<Monument>();
-    monumentPositions = new HashSet<GridPosition>();
+    monuments = new HashMap<GridPosition, Monument>();
     
     for (int index = 0; index < config.getNumMonuments(); index++) {
       GridPosition randomPosition;
       
       while (true) {
         randomPosition = randomGridPosition();
-        if (!monumentPositions.contains(randomPosition)) {
+        if (!monuments.containsKey(randomPosition)) {
           break;
         }
       }
       
       Monument monument = new Monument(randomPosition,"Hi",5); //todo - create default view distance, text
-      monuments.add(monument);
-      monumentPositions.add(randomPosition);
+      monuments.put(randomPosition, monument);
     }
   }
   
@@ -100,7 +97,7 @@ public class Server {
   }
   
   public ArrayList<Monument> getMonuments() {
-    return monuments;
+    return new ArrayList<Monument>(monuments.values());
   }
   
   public int getFramesToMove() {
@@ -217,7 +214,7 @@ public class Server {
   
   private ArrayList<Monument> monumentsVisibleForAgent(Agent agent) {
     ArrayList<Monument> visibleMonuments = new ArrayList<Monument>();
-    for (Monument monument : monuments) {
+    for (Monument monument : monuments.values()) {
       if (monument.canBeSeen(agent.getGridPosition())) {
         visibleMonuments.add(monument);
       }
@@ -233,13 +230,9 @@ public class Server {
   
   private void handleMonumentEditing() {
     for (Agent agent : agents) {
-      if (monumentPositions.contains(agent.getGridPosition())) {
-        for (Monument monument : monuments) {
-          if (monument.getPosition().equals(agent.getGridPosition())) {
-            agent.editMonument(monument);
-            break;
-          }
-        }
+      GridPosition agentPosition = agent.getGridPosition();
+      if (monuments.containsKey(agentPosition)) {
+        agent.editMonument(monuments.get(agentPosition));
       }
     }
   }

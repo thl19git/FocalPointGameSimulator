@@ -32,6 +32,8 @@ public class SmarterAgent extends Agent {
   
   @Override
   public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
+    viewMonuments(visibleMonuments);
+    
     if (mostRecentTextSeen.equals("Hi")) {
       return numChoices;
     } else if (mostRecentTextSeen.equals("Lo")) {
