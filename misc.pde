@@ -2,6 +2,10 @@ public int clamp(int low, int high, int value) {
   return min(high, max(value, low));
 }
 
+public float clamp(float low, float high, float value) {
+  return min(high, max(value, low));
+}
+
 public GridPosition randomGridPosition() {
   int gridSize = config.getGridSize();
   int randomIndex = floor(random(gridSize*gridSize));

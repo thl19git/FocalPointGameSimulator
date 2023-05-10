@@ -7,18 +7,20 @@ public class Config {
   private int numMoves;
   private int maxGridOccupancy;
   private int numMonuments;
+  private float monumentVisibility;
   private Subgame subgame;
   
-  Config(int newGridSize, int newNumAgents, int newNumRounds, int newGridOccupancy, int newNumClusters, int newNumChoices, int newNumMoves, int newNumMonuments, Subgame newSubgame) {
-    setGridSize(newGridSize);
-    setNumAgents(newNumAgents);
-    setNumRounds(newNumRounds);
-    setMaxGridOccupancy(newGridOccupancy);
-    setNumClusters(newNumClusters);
-    setNumChoices(newNumChoices);
-    setNumMoves(newNumMoves);
-    setNumMonuments(newNumMonuments);
-    setSubgame(newSubgame);
+  Config(int gridSize, int numAgents, int numRounds, int gridOccupancy, int numClusters, int numChoices, int numMoves, int numMonuments, float monumentVisibility, Subgame subgame) {
+    setGridSize(gridSize);
+    setNumAgents(numAgents);
+    setNumRounds(numRounds);
+    setMaxGridOccupancy(gridOccupancy);
+    setNumClusters(numClusters);
+    setNumChoices(numChoices);
+    setNumMoves(numMoves);
+    setNumMonuments(numMonuments);
+    setMonumentVisibility(monumentVisibility);
+    setSubgame(subgame);
   }
 
   public int getNumAgents() {
@@ -87,6 +89,15 @@ public class Config {
   public void setNumMonuments(int numMonuments) {
     int maxMonuments = this.gridSize * this.gridSize / 2;
     this.numMonuments = clamp(0, numMonuments, maxMonuments);
+  }
+  
+  public float getMonumentVisibility() {
+    return monumentVisibility;
+  }
+  
+  public void setMonumentVisibility(float monumentVisibility) {
+    float maxVisibility = float(this.gridSize) * sqrt(2);
+    this.monumentVisibility = clamp(0, monumentVisibility, maxVisibility);
   }
   
   public Subgame getSubgame() {

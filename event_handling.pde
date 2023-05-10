@@ -18,13 +18,15 @@ public void handleRestartButton(GButton button, GEvent event) {
   int numMoves = numMovesField.getValueI();
   int occupancy = occupancyField.getValueI();
   int numMonuments = numMonumentsField.getValueI();
+  float monumentVisibility = monumentVisibilityField.getValueF();
   String subgame = subgameDroplist.getSelectedText();
   // Update config
-  config = new Config(gridSize, numAgents, numRounds, occupancy, numClusters, numChoices, numMoves, numMonuments, Subgame.valueOf(subgame));
+  config = new Config(gridSize, numAgents, numRounds, occupancy, numClusters, numChoices, numMoves, numMonuments, monumentVisibility, Subgame.valueOf(subgame));
   // Update any text fields that may have had different values used
   numAgentsField.setText(str(config.getNumAgents()));
   numClustersField.setText(str(config.getNumClusters()));
   occupancyField.setText(str(config.getMaxGridOccupancy()));
   numMonumentsField.setText(str(config.getNumMonuments()));
+  monumentVisibilityField.setText(str(config.getMonumentVisibility()));
   server.reset();
 }

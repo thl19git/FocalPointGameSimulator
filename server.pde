@@ -83,7 +83,7 @@ public class Server {
         }
       }
       
-      Monument monument = new Monument(randomPosition,"Hi",5); //todo - create default view distance, text
+      Monument monument = new Monument(randomPosition,"Hi",config.getMonumentVisibility()); //todo - create default text
       monuments.put(randomPosition, monument);
     }
   }
