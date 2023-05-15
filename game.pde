@@ -18,7 +18,8 @@ public class Game extends GViewListener {
     
     if (server.getStage() == GameStage.PLACING) {
       drawDistricts(graphicsHandle, true);
-      if (placingMonuments == false) {
+      drawStaticAgents(graphicsHandle, false);
+      if (placementStage == PlacementStage.DISTRICTS) {
         drawSelectedSquare(graphicsHandle);
       }
       graphicsHandle.endDraw();
@@ -310,12 +311,19 @@ public class Game extends GViewListener {
     GridPosition bottomRight = coordsToGridPosition(rightX, bottomY);
     
     District district = new District(topLeft, bottomRight);
-    server.addDistrict(district);
+    server.tryAddDistrict(district);
   }
   
   private void createNewMonument() {
     GridPosition position = coordsToGridPosition(eX,eY);
-    server.addMonument(position);
+    server.tryAddMonument(position);
+  }
+  
+  private void createNewAgent() {
+    println("Trying to add an agent");
+    GridPosition position = coordsToGridPosition(eX,eY);
+    boolean success = server.tryAddAgent(position);
+    println(success);
   }
   
   public void mousePressed() {
@@ -334,10 +342,18 @@ public class Game extends GViewListener {
     eX = pmouseX();
     eY = pmouseY();
     if (server.getStage() == GameStage.PLACING) {
-      if (placingMonuments == true) {
-        createNewMonument();
-      } else {
-        createNewDistrict();
+      switch (placementStage) {
+        case MONUMENTS:
+          createNewMonument();
+          break;
+        case DISTRICTS:
+          createNewDistrict();
+          break;
+        case AGENTS:
+          createNewAgent();
+          break;
+        default:
+          println("game - mouseReleased, defualt in switch statement");
       }
     }
   }

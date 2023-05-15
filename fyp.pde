@@ -22,7 +22,7 @@ color[] agentColors;
 
 GView gameView;
 Game game;
-DataVisualiser dataVisualiser;
+VisAndInfoPanel visInfoPanel;
 Config config;
 Server server;
 
@@ -42,7 +42,7 @@ GTextField monumentVisibilityField;
 
 GDropList subgameDroplist;
 
-boolean placingMonuments = false;
+PlacementStage placementStage = PlacementStage.DISTRICTS;
 
 GTextField createTextField(int xPos, int yPos, int min, int max, int def) {
   GTextField field = new GTextField(this, xPos, yPos, 60, 30);
@@ -87,13 +87,14 @@ void setup() {
   
   // game requires server, requires config
   config = new Config(10, 30, 10, 4, 6, 4, 4, 4, 3, Subgame.CONSENSUS); // Default settings
-  dataVisualiser = new DataVisualiser(this, 8*width/15, 7*height/27, 2*width/5, 2*width/5);
+  visInfoPanel = new VisAndInfoPanel(this, 8*width/15, 7*height/27, 2*width/5, 2*width/5);
   server = new Server();
   
   gameView = new GView(this, width/15, 7*height/27, 2*width/5, 2*width/5, P2D);
   game = new Game();
   gameView.addListener(game);
   
+  visInfoPanel.setItemBeingPlaced("Districts");
   
   G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
   G4P.setDisplayFont("Arial", G4P.PLAIN, 20);
@@ -128,6 +129,6 @@ void setup() {
 void draw() {
   background(100);
   drawText();
-  dataVisualiser.update();
+  visInfoPanel.update();
   server.run();
 }

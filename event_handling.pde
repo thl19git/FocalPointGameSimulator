@@ -60,9 +60,9 @@ public void handlePlayButton(GButton button, GEvent event) {
 
 public void handleResetButton(GButton button, GEvent event) {
   if (playButton.getText() == "Start") {
-    // If there are districts or monuments, remove them
-    if (server.containsDistricts() || server.containsMonuments()) {
-      server.removeDistrictsAndMonuments();
+    // If there are placed objects, remove them
+    if (server.containsPlacedObjects()) {
+      server.removePlacedObjects();
       game.update(); //try without
     } else {
       // Go to configuration stage
@@ -86,11 +86,23 @@ public void handleResetButton(GButton button, GEvent event) {
 }
 
 public void handlePlacementButton(GButton button, GEvent event) {
-  if (button.getText() == "Place monuments") {
-    button.setText("Place districts");
-    placingMonuments = true;
-  } else {
-    button.setText("Place monuments");
-    placingMonuments = false;
+  switch (placementStage) {
+    case DISTRICTS:
+      button.setText("Place agents");
+      placementStage = PlacementStage.MONUMENTS;
+      visInfoPanel.setItemBeingPlaced("Monuments");
+      break;
+    case MONUMENTS:
+      button.setText("Place districts");
+      placementStage = PlacementStage.AGENTS;
+      visInfoPanel.setItemBeingPlaced("Agents");
+      break;
+    case AGENTS:
+      button.setText("Place monuments");
+      placementStage = PlacementStage.DISTRICTS;
+      visInfoPanel.setItemBeingPlaced("Districts");
+      break;
+    default:
+      println("handlePlacementButton - switch statement default case");
   }
 }

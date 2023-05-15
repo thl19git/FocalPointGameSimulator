@@ -1,7 +1,11 @@
 public class Server {
+  private ArrayList<Agent> originalAgents;
+  private HashMap<GridPosition, Monument> originalMonuments;
   private ArrayList<Agent> agents;
+  private int nextAgentID;
   private HashMap<GridPosition, Monument> monuments;
   private ArrayList<District> districts;
+  private int[] originalGridOccupancy;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
   private HashMap<Integer, Boolean> voteResults;
@@ -20,7 +24,10 @@ public class Server {
     reset();
     districts = new ArrayList<District>();
     monuments = new HashMap<GridPosition, Monument>();
-    
+    agents = new ArrayList<Agent>();
+    nextAgentID = 1000;
+    int gridSize = config.getGridSize();
+    gridOccupancy = new int[gridSize*gridSize];
   }
   
   public void reset() {
@@ -29,13 +36,35 @@ public class Server {
     paused = false;
     stage = GameStage.CONFIGURATION;
     agentColors = INITIAL_AGENT_COLORS.clone(); // global variable, not local
+    agents = originalAgents;
+    monuments = originalMonuments;
     resetGridOccupancy();
+    gridOccupancy = originalGridOccupancy;
     resetCounters();
-    dataVisualiser.reset(); // global object, not local
+    visInfoPanel.reset(); // global object, not local
+  }
+  
+  private void storeOriginalAgents() {
+    originalAgents = new ArrayList<Agent>(agents.size());
+    for (Agent agent : agents) {
+      originalAgents.add(agent.clone());
+    }
+  }
+  
+  private void storeOriginalMonuments() {
+    originalMonuments = new HashMap<GridPosition, Monument>();
+    for (Monument monument : monuments.values()) {
+      Monument clone = monument.clone();
+      GridPosition position = monument.getPosition();
+      originalMonuments.put(position, clone);
+    }
   }
   
   private void beginGame() {
     paused = false;
+    storeOriginalAgents();
+    storeOriginalMonuments();
+    originalGridOccupancy = gridOccupancy.clone();
     createAgents();
     createMonuments();
     dataLogger.init();
@@ -57,50 +86,41 @@ public class Server {
     gridOccupancy = new int[gridSize*gridSize];
   }
   
+  public boolean tryAddAgent(GridPosition position) {
+    if (gridOccupancy[positionToIndex(position)] == config.getMaxGridOccupancy() || agents.size() == config.getNumAgents()) {
+      return false;
+    }
+    incrementGridOccupancy(position);
+    int positionInBox = gridOccupancyAtPosition(position);
+    //Agent agent = new Agent(nextAgentID++, position, positionInBox);
+    Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
+    agents.add(agent);
+    return true;
+  }
+  
   private void createAgents() {
-    agents = new ArrayList<Agent>();
-    
-    for (int ID = START_ID; ID < START_ID + config.getNumAgents(); ID++) {
-      GridPosition randomPosition;
-      
-      while (true) {
-        randomPosition = randomGridPosition();
-        if (gridOccupancy[positionToIndex(randomPosition)] < config.getMaxGridOccupancy()) {
-          break;
-        }
-      }
-
-      incrementGridOccupancy(randomPosition);
-      int positionInBox = gridOccupancyAtPosition(randomPosition);
-      //Agent agent = new Agent(ID, randomPosition, positionInBox);
-      Agent agent = new SmarterAgent(ID, randomPosition, positionInBox); //Let's see how this lot does!!
-      agents.add(agent);
+    GridPosition randomPosition;
+    while (agents.size() < config.getNumAgents()) {
+      randomPosition = randomGridPosition();
+      tryAddAgent(randomPosition);
     }
   }
   
-  private void createMonuments() {
-    while (monuments.size() < config.getNumMonuments()) {
-      GridPosition randomPosition;
-      
-      while (true) {
-        randomPosition = randomGridPosition();
-        if (!monuments.containsKey(randomPosition)) {
-          break;
-        }
-      }
-      
-      Monument monument = new Monument(randomPosition,"Hi",config.getMonumentVisibility()); //todo - create default text
-      monuments.put(randomPosition, monument);
-    }
-  }
-  
-  public boolean addMonument(GridPosition position) {
+  public boolean tryAddMonument(GridPosition position) {
     if (monuments.containsKey(position) || monuments.size() == config.getNumMonuments()) {
       return false;
     }
     Monument monument = new Monument(position,"Hi",config.getMonumentVisibility());
     monuments.put(position, monument);
     return true;
+  }
+  
+  private void createMonuments() {
+    GridPosition randomPosition;
+    while (monuments.size() < config.getNumMonuments()) {
+        randomPosition = randomGridPosition();
+        tryAddMonument(randomPosition);
+    }
   }
   
   public void togglePaused() {
@@ -133,7 +153,7 @@ public class Server {
     return true;
   }
   
-  public boolean addDistrict(District newDistrict) {
+  public boolean tryAddDistrict(District newDistrict) {
     for (District district : districts) {
       if (districtsOverlap(district, newDistrict)) {
         return false;
@@ -151,9 +171,20 @@ public class Server {
     return monuments.size() > 0; 
   }
   
-  public void removeDistrictsAndMonuments() {
+  public boolean containsAgents() {
+    return agents.size() > 0;
+  }
+  
+  public boolean containsPlacedObjects() {
+    return containsDistricts() || containsMonuments() || containsAgents();
+  }
+  
+  public void removePlacedObjects() {
     districts = new ArrayList<District>();
     monuments = new HashMap<GridPosition, Monument>();
+    agents = new ArrayList<Agent>();
+    resetGridOccupancy();
+    nextAgentID = 1000;
   }
   
   public boolean isCompletelyCoveredInDistricts() {
@@ -266,7 +297,7 @@ public class Server {
       }
     }
     float winRate = (float)winCount / config.getNumAgents();
-    dataVisualiser.addNewWinRate(winRate);
+    visInfoPanel.addNewWinRate(winRate);
   }
   
   private void conductVote() {
@@ -363,7 +394,7 @@ public class Server {
   private void clusteringStage() {
     if (framesForClustering == SHOW_CLUSTERING_FRAMES) {
       int[] agentsPerCluster = kMeansClustering(config.getNumClusters(), agents);
-      dataVisualiser.updateClusterCounts(agentsPerCluster);
+      visInfoPanel.updateClusterCounts(agentsPerCluster);
       game.update();
     }
     framesForClustering--;

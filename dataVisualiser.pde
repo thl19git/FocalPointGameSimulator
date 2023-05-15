@@ -1,4 +1,4 @@
-public class DataVisualiser {
+public class VisAndInfoPanel {
   private BarChart clusterSizesChart;
   private XYChart winRateChart;
   private int x, y, innerWidth, innerHeight;
@@ -7,8 +7,9 @@ public class DataVisualiser {
   private float[] compressedClusterSizeCounts;
   private String[] clusterSizeLabels;
   private ArrayList<PVector> winRatesData;
+  private String itemBeingPlaced;
   
-  DataVisualiser(PApplet papplet, int x, int y, int innerWidth, int innerHeight) {
+  VisAndInfoPanel(PApplet papplet, int x, int y, int innerWidth, int innerHeight) {
     this.x = x;
     this.y = y;
     this.innerWidth = innerWidth;
@@ -45,7 +46,7 @@ public class DataVisualiser {
     textSize(20);
     textAlign(LEFT);
     fill(0);
-    text("Click on the leftmost button to toggle between monument and district creation.\n\nDistrict creation:\n- Drag the mouse to create districts if you wish.\n- Districts must be rectangular and cannot overlap.\n- If you have districts, the whole grid must be covered.\n- Click 'Reset' to remove all existing districts.\n- Click 'Reset' again to return to the configuration stage.\n- Click 'Start' when you have finished creating districts.\n\nMonument creation:\n- Click to place monuments.\n- Any unplaced monuments will be randomly placed.", x+50, y+50);
+    text("Currently placing: " + itemBeingPlaced + "\n\nClick on the leftmost button to toggle between item type.\n\nDistrict creation:\n- Drag the mouse to create districts if you wish.\n- Districts must be rectangular and cannot overlap.\n- If you have districts, the whole grid must be covered.\n\nMonument/Agent creation:\n- Click to place monuments/agents.\n- Any unplaced monuments/agents will be randomly placed.\n\nClick 'Reset' to remove all existing placed objects.\nClick 'Reset' again to return to the configuration stage.\nClick 'Start' when you have finished placing objects.", x+50, y+50);
     fill(255);
   }
   
@@ -113,6 +114,10 @@ public class DataVisualiser {
       }
       break;
     }
+  }
+  
+  public void setItemBeingPlaced(String itemBeingPlaced) {
+    this.itemBeingPlaced = itemBeingPlaced;
   }
   
   public void reset() {

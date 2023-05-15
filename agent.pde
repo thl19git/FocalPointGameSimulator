@@ -95,4 +95,8 @@ public class Agent {
       println("Updated a monument!");
     }
   }
+  
+  public Agent clone() {
+    return new Agent(ID, gridPosition, positionInBox);
+  }
 }

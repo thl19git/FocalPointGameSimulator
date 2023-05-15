@@ -28,4 +28,8 @@ public class Monument {
   public boolean canBeSeen(GridPosition position) {
     return position.distanceTo(this.position) <= viewDistance;
   }
+  
+  public Monument clone() {
+    return new Monument(position, text, viewDistance);
+  }
 }
