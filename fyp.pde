@@ -28,6 +28,7 @@ Server server;
 
 GButton playButton;
 GButton resetButton;
+GButton placementButton;
 
 GTextField numAgentsField;
 GTextField gridSizeField;
@@ -40,6 +41,8 @@ GTextField numMonumentsField;
 GTextField monumentVisibilityField;
 
 GDropList subgameDroplist;
+
+boolean placingMonuments = false;
 
 GTextField createTextField(int xPos, int yPos, int min, int max, int def) {
   GTextField field = new GTextField(this, xPos, yPos, 60, 30);
@@ -100,6 +103,11 @@ void setup() {
   
   resetButton = new GButton(this, 1000, 200, 150, 50, "Reset");
   resetButton.addEventHandler(this, "handleResetButton");
+  
+  placementButton = new GButton(this, 205, 200, 200, 50, "Place monuments");
+  placementButton.addEventHandler(this, "handlePlacementButton");
+  placementButton.setEnabled(false);
+  placementButton.setVisible(false);
   
   numAgentsField = createTextField(205, 140, 1, 100, 30);
   gridSizeField = createTextField(355, 140, 3, 10, 10);

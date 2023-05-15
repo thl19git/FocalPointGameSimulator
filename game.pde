@@ -12,16 +12,21 @@ public class Game extends GViewListener {
       graphicsHandle.endDraw();
       validate();
       return; // Other things have not been initialised
-    } else if (server.getStage() == GameStage.PLACING) {
+    }
+    
+    drawMonuments(graphicsHandle);
+    
+    if (server.getStage() == GameStage.PLACING) {
       drawDistricts(graphicsHandle, true);
-      drawSelectedSquare(graphicsHandle);
+      if (placingMonuments == false) {
+        drawSelectedSquare(graphicsHandle);
+      }
       graphicsHandle.endDraw();
       validate();
       return; // Other things have not been initialised
     }
     
     drawDistricts(graphicsHandle, false);
-    drawMonuments(graphicsHandle);
     
     switch (server.getStage()) {
       case CONFIGURATION:
@@ -295,7 +300,7 @@ public class Game extends GViewListener {
     return new GridPosition(floor(xCoord / gap), floor(yCoord / gap));
   }
   
-  public void createNewDistrict() {
+  private void createNewDistrict() {
     int leftX = min(sX, eX);
     int rightX = max(sX, eX);
     int topY = min(sY, eY);
@@ -306,6 +311,11 @@ public class Game extends GViewListener {
     
     District district = new District(topLeft, bottomRight);
     server.addDistrict(district);
+  }
+  
+  private void createNewMonument() {
+    GridPosition position = coordsToGridPosition(eX,eY);
+    server.addMonument(position);
   }
   
   public void mousePressed() {
@@ -324,7 +334,11 @@ public class Game extends GViewListener {
     eX = pmouseX();
     eY = pmouseY();
     if (server.getStage() == GameStage.PLACING) {
-      createNewDistrict();
+      if (placingMonuments == true) {
+        createNewMonument();
+      } else {
+        createNewDistrict();
+      }
     }
   }
 }

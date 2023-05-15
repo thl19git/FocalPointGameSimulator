@@ -45,7 +45,7 @@ public class DataVisualiser {
     textSize(20);
     textAlign(LEFT);
     fill(0);
-    text("District creation:\n- Drag the mouse to create districts if you wish.\n- Districts must be rectangular and cannot overlap.\n- If you have districts, the whole grid must be covered.\n- Click 'Reset' to remove all existing districts.\n- Click 'Reset' again to return to the configuration stage.\n- Click 'Start' when you have finished creating districts.", x+50, y+50);
+    text("Click on the leftmost button to toggle between monument and district creation.\n\nDistrict creation:\n- Drag the mouse to create districts if you wish.\n- Districts must be rectangular and cannot overlap.\n- If you have districts, the whole grid must be covered.\n- Click 'Reset' to remove all existing districts.\n- Click 'Reset' again to return to the configuration stage.\n- Click 'Start' when you have finished creating districts.\n\nMonument creation:\n- Click to place monuments.\n- Any unplaced monuments will be randomly placed.", x+50, y+50);
     fill(255);
   }
   

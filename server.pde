@@ -19,6 +19,8 @@ public class Server {
   Server() {
     reset();
     districts = new ArrayList<District>();
+    monuments = new HashMap<GridPosition, Monument>();
+    
   }
   
   public void reset() {
@@ -77,9 +79,7 @@ public class Server {
   }
   
   private void createMonuments() {
-    monuments = new HashMap<GridPosition, Monument>();
-    
-    for (int index = 0; index < config.getNumMonuments(); index++) {
+    while (monuments.size() < config.getNumMonuments()) {
       GridPosition randomPosition;
       
       while (true) {
@@ -92,6 +92,15 @@ public class Server {
       Monument monument = new Monument(randomPosition,"Hi",config.getMonumentVisibility()); //todo - create default text
       monuments.put(randomPosition, monument);
     }
+  }
+  
+  public boolean addMonument(GridPosition position) {
+    if (monuments.containsKey(position) || monuments.size() == config.getNumMonuments()) {
+      return false;
+    }
+    Monument monument = new Monument(position,"Hi",config.getMonumentVisibility());
+    monuments.put(position, monument);
+    return true;
   }
   
   public void togglePaused() {
@@ -138,8 +147,13 @@ public class Server {
     return districts.size() > 0;
   }
   
-  public void removeDistricts() {
+  public boolean containsMonuments() {
+    return monuments.size() > 0; 
+  }
+  
+  public void removeDistrictsAndMonuments() {
     districts = new ArrayList<District>();
+    monuments = new HashMap<GridPosition, Monument>();
   }
   
   public boolean isCompletelyCoveredInDistricts() {

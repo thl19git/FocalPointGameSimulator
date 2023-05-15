@@ -42,6 +42,8 @@ public void handlePlayButton(GButton button, GEvent event) {
     monumentVisibilityField.setText(str(config.getMonumentVisibility()));
     
     enableDisableFields(false);
+    placementButton.setEnabled(true);
+    placementButton.setVisible(true);
     button.setText("Start");
     server.startPlacingStage();
   } else { // Text is "Start"
@@ -51,20 +53,24 @@ public void handlePlayButton(GButton button, GEvent event) {
     }
     server.beginGame();
     button.setText("Pause");
+    placementButton.setEnabled(false);
+    placementButton.setVisible(false);
   }
 }
 
 public void handleResetButton(GButton button, GEvent event) {
   if (playButton.getText() == "Start") {
-    // If there are districts, remove monuments
-    if (server.containsDistricts()) {
-      server.removeDistricts();
+    // If there are districts or monuments, remove them
+    if (server.containsDistricts() || server.containsMonuments()) {
+      server.removeDistrictsAndMonuments();
       game.update(); //try without
     } else {
       // Go to configuration stage
       playButton.setText("Configure");
       server.reset();
       enableDisableFields(true);
+      placementButton.setEnabled(false);
+      placementButton.setVisible(false);
       game.update();
     }
   } else if (playButton.getText() == "Configure") {
@@ -73,6 +79,18 @@ public void handleResetButton(GButton button, GEvent event) {
     playButton.setText("Start");
     server.reset();
     server.startPlacingStage();
+    placementButton.setEnabled(true);
+    placementButton.setVisible(true);
     game.update();
+  }
+}
+
+public void handlePlacementButton(GButton button, GEvent event) {
+  if (button.getText() == "Place monuments") {
+    button.setText("Place districts");
+    placingMonuments = true;
+  } else {
+    button.setText("Place monuments");
+    placingMonuments = false;
   }
 }
