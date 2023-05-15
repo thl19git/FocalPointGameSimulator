@@ -1,13 +1,33 @@
 public class Game extends GViewListener {
+  private int sX, sY, eX, eY;
+  
   public void update() {
     PGraphics graphicsHandle = getGraphics();
     graphicsHandle.beginDraw();
     graphicsHandle.background(255);
     
     drawGrid(graphicsHandle);
+    
+    if (server.getStage() == GameStage.CONFIGURATION) {
+      graphicsHandle.endDraw();
+      validate();
+      return; // Other things have not been initialised
+    } else if (server.getStage() == GameStage.PLACING) {
+      drawDistricts(graphicsHandle, true);
+      drawSelectedSquare(graphicsHandle);
+      graphicsHandle.endDraw();
+      validate();
+      return; // Other things have not been initialised
+    }
+    
+    drawDistricts(graphicsHandle, false);
     drawMonuments(graphicsHandle);
     
     switch (server.getStage()) {
+      case CONFIGURATION:
+        break;
+      case PLACING:
+        break;
       case MOVE_DECISION:
         drawMoveDecisionStage(graphicsHandle);
         break;
@@ -45,6 +65,16 @@ public class Game extends GViewListener {
     drawStaticAgents(graphicsHandle, false);
   }
   
+  private void drawSelectedSquare(PGraphics graphicsHandle) {
+    if (!isMousePressed() || !isMouseOver()) {
+      return;
+    }
+    graphicsHandle.rectMode(CORNERS);
+    graphicsHandle.fill(100, 50);
+    graphicsHandle.rect(sX, sY, eX, eY);
+    graphicsHandle.rectMode(CORNER);
+  }
+  
   private void drawGrid(PGraphics graphicsHandle) {
     graphicsHandle.stroke(color(0,0,0));
     graphicsHandle.strokeWeight(5);
@@ -75,6 +105,47 @@ public class Game extends GViewListener {
     ArrayList<Monument> monuments = server.getMonuments();
     for (Monument monument : monuments) {
       drawMonument(graphicsHandle, monument);
+    }
+  }
+  
+  private void drawDistrict(PGraphics graphicsHandle, District district, boolean shade) {
+    graphicsHandle.stroke(color(255,0,0));
+    graphicsHandle.strokeWeight(5);
+    float gap = float(width()) / float(config.getGridSize());
+    
+    float leftX = district.getTopLeft().getX() * gap;
+    float rightX = (district.getBottomRight().getX() + 1) * gap;
+    float topY = district.getTopLeft().getY() * gap;
+    float bottomY = (district.getBottomRight().getY() + 1) * gap;
+    
+    if (district.getTopLeft().getY() != 0) {
+      graphicsHandle.line(leftX, topY, rightX, topY);
+    }
+    if (district.getBottomRight().getY() != config.getGridSize() - 1) {
+      graphicsHandle.line(leftX, bottomY, rightX, bottomY);
+    }
+    if (district.getTopLeft().getX() != 0) {
+      graphicsHandle.line(leftX, topY, leftX, bottomY);
+    }
+    if (district.getBottomRight().getX() != config.getGridSize() - 1) {
+      graphicsHandle.line(rightX, topY, rightX, bottomY);
+    }
+    
+    if (shade == true) {
+      graphicsHandle.noStroke();
+      graphicsHandle.fill(100, 80);
+      graphicsHandle.rectMode(CORNERS);
+      graphicsHandle.rect(leftX, topY, rightX, bottomY);
+      graphicsHandle.rectMode(CORNER);
+    }
+    
+    graphicsHandle.stroke(color(0,0,0));
+  }
+  
+  private void drawDistricts(PGraphics graphicsHandle, boolean shade) {
+    ArrayList<District> districts = server.getDistricts();
+    for (District district : districts) {
+      drawDistrict(graphicsHandle, district, shade);
     }
   }
   
@@ -217,5 +288,43 @@ public class Game extends GViewListener {
     graphicsHandle.fill(agentColor);
     graphicsHandle.circle(xPosition, yPosition, size);
     graphicsHandle.noFill();
+  }
+  
+  public GridPosition coordsToGridPosition(int xCoord, int yCoord) {
+    float gap = float(width()) / float(config.getGridSize());
+    return new GridPosition(floor(xCoord / gap), floor(yCoord / gap));
+  }
+  
+  public void createNewDistrict() {
+    int leftX = min(sX, eX);
+    int rightX = max(sX, eX);
+    int topY = min(sY, eY);
+    int bottomY = max(sY, eY);
+    
+    GridPosition topLeft = coordsToGridPosition(leftX, topY);
+    GridPosition bottomRight = coordsToGridPosition(rightX, bottomY);
+    
+    District district = new District(topLeft, bottomRight);
+    server.addDistrict(district);
+  }
+  
+  public void mousePressed() {
+    sX = pmouseX();
+    eX = pmouseX();
+    sY = pmouseY();
+    eY = pmouseY();
+  }
+  
+  public void mouseDragged() {
+    eX = pmouseX();
+    eY = pmouseY();
+  }
+  
+  public void mouseReleased() {
+    eX = pmouseX();
+    eY = pmouseY();
+    if (server.getStage() == GameStage.PLACING) {
+      createNewDistrict();
+    }
   }
 }

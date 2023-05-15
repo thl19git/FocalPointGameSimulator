@@ -1,6 +1,7 @@
 public class Server {
   private ArrayList<Agent> agents;
   private HashMap<GridPosition, Monument> monuments;
+  private ArrayList<District> districts;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
   private HashMap<Integer, Boolean> voteResults;
@@ -16,24 +17,29 @@ public class Server {
   private boolean savedJSON;
   
   Server() {
-    dataLogger = new DataLogger();
-    subgameHandler = new SubgameHandler();
     reset();
+    districts = new ArrayList<District>();
   }
   
-  private void reset() {
+  public void reset() {
+    dataLogger = new DataLogger();
+    subgameHandler = new SubgameHandler();
+    paused = false;
+    stage = GameStage.CONFIGURATION;
     agentColors = INITIAL_AGENT_COLORS.clone(); // global variable, not local
     resetGridOccupancy();
     resetCounters();
-    //resetRunningStats();
+    dataVisualiser.reset(); // global object, not local
+  }
+  
+  private void beginGame() {
     paused = false;
-    stage = GameStage.START;
     createAgents();
     createMonuments();
     dataLogger.init();
     dataLogger.logConfig(config);
     savedJSON = false;
-    dataVisualiser.reset(); // global object, not local
+    stage = GameStage.START;
   }
   
   private void resetCounters() {
@@ -100,8 +106,49 @@ public class Server {
     return new ArrayList<Monument>(monuments.values());
   }
   
+  public ArrayList<District> getDistricts() {
+    return districts;
+  }
+  
   public int getFramesToMove() {
     return framesToMove;
+  }
+  
+  public boolean districtsOverlap(District d1, District d2) {
+    if (d1.getBottomRight().getY() < d2.getTopLeft().getY() || d2.getBottomRight().getY() < d1.getTopLeft().getY()) {
+      return false;
+    }
+    if (d1.getTopLeft().getX() > d2.getBottomRight().getX() || d2.getTopLeft().getX() > d1.getBottomRight().getX()) {
+      return false;
+    }
+    return true;
+  }
+  
+  public boolean addDistrict(District newDistrict) {
+    for (District district : districts) {
+      if (districtsOverlap(district, newDistrict)) {
+        return false;
+      }
+    }
+    districts.add(newDistrict);
+    return true;
+  }
+  
+  public boolean containsDistricts() {
+    return districts.size() > 0;
+  }
+  
+  public void removeDistricts() {
+    districts = new ArrayList<District>();
+  }
+  
+  public boolean isCompletelyCoveredInDistricts() {
+    int totalSquares = config.getGridSize() * config.getGridSize();
+    int coveredSquares = 0;
+    for (District district : districts) {
+      coveredSquares += district.numSquares();
+    }
+    return coveredSquares == totalSquares;
   }
   
   private ArrayList<GridPosition> getValidPositions(GridPosition position) {
@@ -178,6 +225,10 @@ public class Server {
     }
   }
   
+  public void startPlacingStage() {
+    stage = GameStage.PLACING;
+  }
+  
   public GameStage getStage() {
     return stage;
   }
@@ -191,11 +242,17 @@ public class Server {
   }
   
   private void distributeVoteResults() {
+    int winCount = 0;
     for (Agent agent : agents) {
       int ID = agent.getID();
       boolean result = voteResults.get(ID);
       agent.receiveVoteResult(result);
+      if (result) {
+        winCount++;
+      }
     }
+    float winRate = (float)winCount / config.getNumAgents();
+    dataVisualiser.addNewWinRate(winRate);
   }
   
   private void conductVote() {
@@ -327,6 +384,12 @@ public class Server {
     }
     
     switch (stage) {
+      case CONFIGURATION:
+        // Do nothing
+        break;
+      case PLACING:
+        game.update();
+        break;
       case START:
         startStage();
         break;

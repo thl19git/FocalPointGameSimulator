@@ -27,7 +27,7 @@ Config config;
 Server server;
 
 GButton playButton;
-GButton restartButton;
+GButton resetButton;
 
 GTextField numAgentsField;
 GTextField gridSizeField;
@@ -95,11 +95,11 @@ void setup() {
   G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
   G4P.setDisplayFont("Arial", G4P.PLAIN, 20);
   
-  playButton = new GButton(this, 770, 200, 150, 50, "Pause");
+  playButton = new GButton(this, 770, 200, 150, 50, "Configure");
   playButton.addEventHandler(this, "handlePlayButton");
   
-  restartButton = new GButton(this, 1000, 200, 150, 50, "Restart");
-  restartButton.addEventHandler(this, "handleRestartButton");
+  resetButton = new GButton(this, 1000, 200, 150, 50, "Reset");
+  resetButton.addEventHandler(this, "handleResetButton");
   
   numAgentsField = createTextField(205, 140, 1, 100, 30);
   gridSizeField = createTextField(355, 140, 3, 10, 10);

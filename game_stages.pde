@@ -1,4 +1,6 @@
 enum GameStage {
+  CONFIGURATION,
+  PLACING,
   START,
   MOVE_DECISION,
   AGENTS_MOVING,

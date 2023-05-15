@@ -24,6 +24,8 @@ public class DataLogger {
     data.setInt("numChoices", conf.getNumChoices());
     data.setInt("numMoves", conf.getNumMoves());
     data.setInt("maxOccupancy", conf.getMaxGridOccupancy());
+    data.setInt("numMonuments", conf.getNumMonuments());
+    data.setFloat("monumentVisibility", conf.getMonumentVisibility());
     data.setString("subgame", conf.getSubgame().name());
   }
   

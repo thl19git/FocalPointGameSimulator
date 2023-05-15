@@ -65,4 +65,9 @@ public class GridPosition implements Comparable<GridPosition>{
   public int hashCode() {
     return Objects.hash(this.x, this.y);
   }
+  
+  @Override
+  public String toString() {
+    return "(" + x + "," + y + ")";
+  }
 }
