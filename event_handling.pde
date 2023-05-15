@@ -45,7 +45,10 @@ public void handlePlayButton(GButton button, GEvent event) {
     button.setText("Start");
     server.startPlacingStage();
   } else { // Text is "Start"
-    // Begin the game
+    // Begin the game if grid is covered in districts or has no districts
+    if (server.containsDistricts() && !server.isCompletelyCoveredInDistricts()) {
+      return;
+    }
     server.beginGame();
     button.setText("Pause");
   }
