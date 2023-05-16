@@ -42,6 +42,9 @@ GTextField monumentVisibilityField;
 
 GDropList subgameDroplist;
 
+GCheckbox localisedMonumentsCheckbox;
+GCheckbox districtClustersCheckbox;
+
 PlacementStage placementStage = PlacementStage.DISTRICTS;
 
 GTextField createTextField(int xPos, int yPos, int min, int max, int def) {
@@ -66,16 +69,22 @@ void drawText() {
   text("Focal Point Game Simulator", width/2, height/15);
 
   textSize(25);
-  text("Agents", 235, 120);
-  text("Grid Size", 385, 120);
-  text("Rounds", 535, 120);
-  text("Clusters", 685, 120);
-  text("Choices", 835, 120);
-  text("Moves", 985, 120);
-  text("Occupancy", 1135, 120);
-  text("Monuments", 1285, 120);
-  text("Visibility", 1435, 120);
-  text("Subgame", 1635, 120);
+  text("Agents", 325, 120);
+  text("Grid Size", 475, 120);
+  text("Rounds", 625, 120);
+  text("Clusters", 775, 120);
+  text("Choices", 925, 120);
+  text("Moves", 1075, 120);
+  text("Occupancy", 1225, 120);
+  text("Monuments", 1375, 120);
+  text("Visibility", 1525, 120);
+  text("Subgame", 1725, 120);
+  
+  textSize(20);
+  text("Localised", 190, 110);
+  text("monuments", 190, 130);
+  text("District", 190, 160);
+  text("clusters", 190, 180);
 }
 
 void setup() {
@@ -109,18 +118,21 @@ void setup() {
   placementButton.addEventHandler(this, "handlePlacementButton");
   placementButton.setEnabled(false);
   placementButton.setVisible(false);
+  
+  localisedMonumentsCheckbox = new GCheckbox(this, 115, 105, 10, 10);
+  districtClustersCheckbox = new GCheckbox(this, 115, 155, 10, 10);
 
-  numAgentsField = createTextField(205, 140, 1, 100, 30);
-  gridSizeField = createTextField(355, 140, 3, 10, 10);
-  numRoundsField = createTextField(505, 140, 1, 1000, 10);
-  numClustersField = createTextField(655, 140, 1, 6, 6);
-  numChoicesField = createTextField(805, 140, 1, 1000, 4);
-  numMovesField = createTextField(955, 140, 1, 20, 4);
-  occupancyField = createTextField(1105, 140, 1, 4, 4);
-  numMonumentsField = createTextField(1255, 140, 0, 50, 4);
-  monumentVisibilityField = createFloatTextField(1405, 140, 0, 20, 3);
+  numAgentsField = createTextField(295, 140, 1, 100, 30);
+  gridSizeField = createTextField(445, 140, 3, 10, 10);
+  numRoundsField = createTextField(595, 140, 1, 1000, 10);
+  numClustersField = createTextField(745, 140, 1, 6, 6);
+  numChoicesField = createTextField(895, 140, 1, 1000, 4);
+  numMovesField = createTextField(1045, 140, 1, 20, 4);
+  occupancyField = createTextField(1195, 140, 1, 4, 4);
+  numMonumentsField = createTextField(1345, 140, 0, 50, 4);
+  monumentVisibilityField = createFloatTextField(1495, 140, 0, 20, 3);
 
-  subgameDroplist = new GDropList(this, 1555, 140, 160, 150);
+  subgameDroplist = new GDropList(this, 1645, 140, 160, 150); //1555, 140, 160, 150
   subgameDroplist.setItems(SUBGAMES, 0);
 
   drawText();
