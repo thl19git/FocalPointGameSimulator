@@ -60,6 +60,10 @@ public void handlePlayButton(GButton button, GEvent event) {
     if (!startGameErrorCheck()) {
       return;
     }
+    if (config.getDistrictClusters()) {
+      numClustersField.setText(str(server.numDistricts()));
+      config.setNumClusters(server.numDistricts());
+    }
     server.beginGame();
     button.setText("Pause");
     placementButton.setEnabled(false);
@@ -123,6 +127,19 @@ public void handlePlacementButton(GButton button, GEvent event) {
     break;
   default:
     println("handlePlacementButton - switch statement default case");
+  }
+}
+
+public void handleDistrictClustersCheckboxEvents(GCheckbox checkbox, GEvent event) {
+  switch (event) {
+    case SELECTED:
+      numClustersField.setNumeric(1, 100, 6);
+      break;
+    case DESELECTED:
+      numClustersField.setNumeric(1, 6, 6);
+      break;
+    default:
+      println("This shouldn't happen");
   }
 }
 

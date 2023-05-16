@@ -17,13 +17,13 @@ public class Config {
     setNumAgents(numAgents);
     setNumRounds(numRounds);
     setMaxGridOccupancy(gridOccupancy);
+    setDistrictClusters(districtClusters);
     setNumClusters(numClusters);
     setNumChoices(numChoices);
     setNumMoves(numMoves);
     setNumMonuments(numMonuments);
     setMonumentVisibility(monumentVisibility);
     setLocalisedMonuments(localisedMonuments);
-    setDistrictClusters(districtClusters);
     setSubgame(subgame);
   }
 
@@ -56,9 +56,13 @@ public class Config {
   }
 
   public void setNumClusters(int numClusters) {
-    //this.numClusters = clamp(1, INITIAL_AGENT_COLORS.length, numClusters);
-    int maxClusters = ceil(float(numAgents) / float(maxGridOccupancy));
-    this.numClusters = clamp(1, min(maxClusters, INITIAL_AGENT_COLORS.length), numClusters);
+    int maxClusters;
+    if (districtClusters) {
+      this.numClusters = clamp(1, 100, numClusters);
+    } else {
+      maxClusters = ceil(float(numAgents) / float(maxGridOccupancy));
+      this.numClusters = clamp(1, min(maxClusters, INITIAL_AGENT_COLORS.length), numClusters);
+    }
   }
 
   public int getNumChoices() {

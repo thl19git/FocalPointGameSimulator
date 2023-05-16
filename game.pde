@@ -227,7 +227,12 @@ public class Game extends GViewListener {
       sizeScaleFactor = 0.5;
     }
 
-    color agentColor = agentColors[agent.getClusterNumber()];
+    color agentColor;
+    if (config.getDistrictClusters()) {
+      agentColor = agentColors[0];
+    } else {
+      agentColor = agentColors[agent.getClusterNumber()];
+    }
 
     drawAgent(graphicsHandle, xPosition, yPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor, outlineColor);
   }
@@ -272,7 +277,12 @@ public class Game extends GViewListener {
       sizeScaleFactor = 0.5;
     }
 
-    color agentColor = agentColors[agent.getClusterNumber()];
+    color agentColor;
+    if (config.getDistrictClusters()) {
+      agentColor = agentColors[0];
+    } else {
+      agentColor = agentColors[agent.getClusterNumber()];
+    }
 
     drawAgent(graphicsHandle, movingXPosition, movingYPosition, gap * AGENT_WIDTH * sizeScaleFactor, agentColor, BLACK);
   }

@@ -209,6 +209,10 @@ public class Server {
   public boolean containsDistricts() {
     return districts.size() > 0;
   }
+  
+  public int numDistricts() {
+    return districts.size();
+  }
 
   public boolean containsMonuments() {
     return monuments.size() > 0;
@@ -349,13 +353,13 @@ public class Server {
   }
 
   private void conductVote() {
-    int clusters = config.getNumClusters();
+    int numClusters = config.getNumClusters();
     HashMap<Integer, Integer> votes = new HashMap<Integer, Integer>();
     gatherVotes(votes);
-    voteResults = subgameHandler.computeResults(clusters, config.getNumChoices(), agents, votes);
+    voteResults = subgameHandler.computeResults(numClusters, config.getNumChoices(), agents, votes);
     distributeVoteResults();
     handleMonumentEditing(); //Agents can update monuments after receiving game results
-    dataLogger.logRound(agents, votes, voteResults, config.getNumClusters());
+    dataLogger.logRound(agents, votes, voteResults, numClusters);
   }
 
   public boolean getAgentResult(int ID) {
@@ -401,6 +405,16 @@ public class Server {
       }
     }
     return districtsArray;
+  }
+  
+  private int[] districtClustering() {
+    int[] agentsPerCluster = new int[districts.size()];
+    for (Agent agent : agents) {
+      int clusterNumber = agent.getCurrentDistrict();
+      agent.setClusterNumber(clusterNumber);
+      agentsPerCluster[clusterNumber]++;
+    }
+    return agentsPerCluster;
   }
 
   private void startStage() {
@@ -460,7 +474,12 @@ public class Server {
 
   private void clusteringStage() {
     if (framesForClustering == SHOW_CLUSTERING_FRAMES) {
-      int[] agentsPerCluster = kMeansClustering(config.getNumClusters(), agents);
+      int[] agentsPerCluster;
+      if (config.getDistrictClusters()) {
+        agentsPerCluster = districtClustering();
+      } else {
+        agentsPerCluster = kMeansClustering(config.getNumClusters(), agents);
+      }
       visInfoPanel.updateClusterCounts(agentsPerCluster);
       game.update();
     }

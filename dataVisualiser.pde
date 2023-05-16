@@ -42,7 +42,7 @@ public class VisAndInfoPanel {
     textSize(20);
     textAlign(LEFT);
     fill(0);
-    text("Configuration:\n- Use the text cells to configure an experiment.\n- Any incompatibilities will be automatically fixed.\n- Click 'Configure' when finished.", x+50, y+50);
+    text("Configuration:\n- Use the text cells to configure an experiment.\n- Any incompatibilities will be automatically fixed.\n- Number of clusters is ignored if district clusters are selected.\n- Click 'Configure' when finished.", x+50, y+50);
     fill(255);
   }
 

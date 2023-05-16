@@ -121,6 +121,7 @@ void setup() {
   
   localisedMonumentsCheckbox = new GCheckbox(this, 115, 105, 10, 10);
   districtClustersCheckbox = new GCheckbox(this, 115, 155, 10, 10);
+  districtClustersCheckbox.addEventHandler(this, "handleDistrictClustersCheckboxEvents");
 
   numAgentsField = createTextField(295, 140, 1, 100, 30);
   gridSizeField = createTextField(445, 140, 3, 10, 10);
