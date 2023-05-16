@@ -3,8 +3,10 @@ public class Server {
   private HashMap<GridPosition, Monument> originalMonuments;
   private ArrayList<Agent> agents;
   private int nextAgentID;
+  private int nextDistrictNumber;
   private HashMap<GridPosition, Monument> monuments;
   private ArrayList<District> districts;
+  private HashMap<GridPosition, Integer> districtAtPosition;
   private int[] originalGridOccupancy;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
@@ -24,11 +26,12 @@ public class Server {
     resetCollections();
     reset();
     nextAgentID = 1000;
-    
+    nextDistrictNumber = 0;
   }
   
   private void resetCollections() {
     districts = new ArrayList<District>();
+    districtAtPosition = new HashMap<GridPosition, Integer>();
     monuments = new HashMap<GridPosition, Monument>();
     originalMonuments = new HashMap<GridPosition, Monument>();
     agents = new ArrayList<Agent>();
@@ -76,12 +79,27 @@ public class Server {
     }
   }
   
+  private void assignDistricts() {
+    if (districts.size() > 0) {
+      for(Agent agent : agents) {
+        int district = districtAtPosition.get(agent.getGridPosition());
+        agent.setHomeDistrict(district);
+        agent.setCurrentDistrict(district);
+      }
+      for(Monument monument : monuments.values()) {
+        int district = districtAtPosition.get(monument.getPosition());
+        monument.setDistrict(district);
+      }
+    }
+  }
+  
   private void beginGame() {
     paused = false;
     storeOriginalAgents();
     storeOriginalMonuments();
     originalGridOccupancy = gridOccupancy.clone();
     createAgents();
+    assignDistricts();
     createMonuments();
     dataLogger.init();
     dataLogger.logConfig(config);
@@ -159,6 +177,15 @@ public class Server {
     return framesToMove;
   }
   
+  private void populateDistrictPositionMap(District district) {
+    for (int x = district.getTopLeft().getX(); x <= district.getBottomRight().getX(); x++) {
+      for (int y = district.getTopLeft().getY(); y <= district.getBottomRight().getY(); y++) {
+        districtAtPosition.put(new GridPosition(x, y), nextDistrictNumber);
+      }
+    }
+    nextDistrictNumber++;
+  }
+  
   public boolean districtsOverlap(District d1, District d2) {
     if (d1.getBottomRight().getY() < d2.getTopLeft().getY() || d2.getBottomRight().getY() < d1.getTopLeft().getY()) {
       return false;
@@ -176,6 +203,7 @@ public class Server {
       }
     }
     districts.add(newDistrict);
+    populateDistrictPositionMap(newDistrict);
     return true;
   }
   
@@ -201,6 +229,7 @@ public class Server {
     agents = new ArrayList<Agent>();
     resetGridOccupancy();
     nextAgentID = 1000;
+    nextDistrictNumber = 0;
   }
   
   public boolean isCompletelyCoveredInDistricts() {
@@ -359,6 +388,14 @@ public class Server {
     }
   }
   
+  private ArrayList<Integer> districtsOfPositions(ArrayList<GridPosition> positions) {
+    ArrayList<Integer> districtsArray = new ArrayList<Integer>();
+    for (GridPosition position : positions) {
+      districtsArray.add(districtAtPosition.get(position));
+    }
+    return districtsArray;
+  }
+  
   private void startStage() {
     if (roundsRemaining > 0) {
       roundsRemaining--;
@@ -374,8 +411,11 @@ public class Server {
     for (Agent agent : agents) {
       GridPosition position = agent.getGridPosition();
       ArrayList<GridPosition> validPositions = getValidPositions(position);
-      int nextPositionIndex = agent.chooseNextGridPosition(validPositions);
-      agent.setNextGridPosition(validPositions.get(nextPositionIndex));
+      ArrayList<Integer> districtsArray = districtsOfPositions(validPositions);
+      int nextPositionIndex = agent.chooseNextGridPosition(validPositions, districtsArray);
+      GridPosition nextPosition = validPositions.get(nextPositionIndex);
+      agent.setNextGridPosition(nextPosition);
+      agent.setCurrentDistrict(districtAtPosition.get(nextPosition));
       
       if (validPositions.get(nextPositionIndex) != position) { // i.e. moving square
         decrementGridOccupancy(position);

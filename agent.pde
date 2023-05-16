@@ -1,6 +1,8 @@
 public class Agent {
   protected final int ID;
   protected GridPosition gridPosition;
+  protected int homeDistrict;
+  protected int currentDistrict;
   private GridPosition nextGridPosition;
   private int positionInBox;
   private int nextPositionInBox;
@@ -13,6 +15,8 @@ public class Agent {
     this.positionInBox = positionInBox;
     this.nextPositionInBox = positionInBox;
     this.clusterNumber = 0;
+    this.homeDistrict = 0;
+    this.currentDistrict = 0;
   }
   
   public int getID() {
@@ -35,7 +39,7 @@ public class Agent {
     this.nextGridPosition = nextGridPosition;
   }
   
-  public int chooseNextGridPosition(final ArrayList<GridPosition> validPositions) {
+  public int chooseNextGridPosition(final ArrayList<GridPosition> validPositions, final ArrayList<Integer> districts) {
     return floor(random(validPositions.size()));
   }
   
@@ -68,9 +72,24 @@ public class Agent {
     this.clusterNumber = clusterNumber;
   }
   
+  public int getHomeDistrict() {
+    return homeDistrict;
+  }
+  
+  public void setHomeDistrict(int homeDistrict) {
+    this.homeDistrict = homeDistrict;
+  }
+  
+  public int getCurrentDistrict() {
+    return currentDistrict;
+  }
+  
+  public void setCurrentDistrict(int currentDistrict) {
+    this.currentDistrict = currentDistrict;
+  }
+  
   // Must return a number in the range [1..numChoices]
   public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
-    //println("Choosing, can see " + visibleMonuments.size() + " monuments");
     int choice = ceil(random(numChoices));
     return choice;
   }
