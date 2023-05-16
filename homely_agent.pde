@@ -5,7 +5,7 @@ public class HomelyAgent extends Agent {
   }
 
   @Override
-    public int chooseNextGridPosition(final ArrayList<GridPosition> validPositions, final ArrayList<Integer> districts) {
+  public int chooseNextGridPosition(final ArrayList<GridPosition> validPositions, final ArrayList<Integer> districts) {
     ArrayList<Integer> sameDistrictPositions = new ArrayList<Integer>();
     ArrayList<Integer> differentDistrictPositions = new ArrayList<Integer>();
     for (int index = 0; index < districts.size(); index++) {

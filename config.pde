@@ -8,9 +8,11 @@ public class Config {
   private int maxGridOccupancy;
   private int numMonuments;
   private float monumentVisibility;
+  private boolean localisedMonuments;
+  private boolean districtClusters;
   private Subgame subgame;
 
-  Config(int gridSize, int numAgents, int numRounds, int gridOccupancy, int numClusters, int numChoices, int numMoves, int numMonuments, float monumentVisibility, Subgame subgame) {
+  Config(int gridSize, int numAgents, int numRounds, int gridOccupancy, int numClusters, int numChoices, int numMoves, int numMonuments, float monumentVisibility, boolean localisedMonuments, boolean districtClusters, Subgame subgame) {
     setGridSize(gridSize);
     setNumAgents(numAgents);
     setNumRounds(numRounds);
@@ -20,6 +22,8 @@ public class Config {
     setNumMoves(numMoves);
     setNumMonuments(numMonuments);
     setMonumentVisibility(monumentVisibility);
+    setLocalisedMonuments(localisedMonuments);
+    setDistrictClusters(districtClusters);
     setSubgame(subgame);
   }
 
@@ -98,6 +102,22 @@ public class Config {
   public void setMonumentVisibility(float monumentVisibility) {
     float maxVisibility = float(this.gridSize) * sqrt(2);
     this.monumentVisibility = clamp(0, monumentVisibility, maxVisibility);
+  }
+  
+  public boolean getLocalisedMonuments() {
+    return localisedMonuments;
+  }
+  
+  public void setLocalisedMonuments(boolean localisedMonuments) {
+    this.localisedMonuments = localisedMonuments;
+  }
+  
+  public boolean getDistrictClusters() {
+    return districtClusters;
+  }
+  
+  public void setDistrictClusters(boolean districtClusters) {
+    this.districtClusters = districtClusters;
   }
 
   public Subgame getSubgame() {

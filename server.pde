@@ -80,16 +80,10 @@ public class Server {
   }
 
   private void assignDistricts() {
-    if (districts.size() > 0) {
-      for (Agent agent : agents) {
-        int district = districtAtPosition.get(agent.getGridPosition());
-        agent.setHomeDistrict(district);
-        agent.setCurrentDistrict(district);
-      }
-      for (Monument monument : monuments.values()) {
-        int district = districtAtPosition.get(monument.getPosition());
-        monument.setDistrict(district);
-      }
+    for (Agent agent : agents) {
+      int district = districtAtPosition.getOrDefault(agent.getGridPosition(), 0);
+      agent.setHomeDistrict(district);
+      agent.setCurrentDistrict(district);
     }
   }
 
@@ -391,8 +385,14 @@ public class Server {
 
   private ArrayList<Integer> districtsOfPositions(ArrayList<GridPosition> positions) {
     ArrayList<Integer> districtsArray = new ArrayList<Integer>();
-    for (GridPosition position : positions) {
-      districtsArray.add(districtAtPosition.get(position));
+    if (nextDistrictNumber != 0) {
+      for (GridPosition position : positions) {
+        districtsArray.add(districtAtPosition.get(position));
+      }
+    } else {
+      for (int i = 0; i < positions.size(); i++) {
+        districtsArray.add(0);
+      }
     }
     return districtsArray;
   }
@@ -416,7 +416,7 @@ public class Server {
       int nextPositionIndex = agent.chooseNextGridPosition(validPositions, districtsArray);
       GridPosition nextPosition = validPositions.get(nextPositionIndex);
       agent.setNextGridPosition(nextPosition);
-      agent.setCurrentDistrict(districtAtPosition.get(nextPosition));
+      agent.setCurrentDistrict(districtAtPosition.getOrDefault(nextPosition, 0));
 
       if (validPositions.get(nextPositionIndex) != position) { // i.e. moving square
         decrementGridOccupancy(position);

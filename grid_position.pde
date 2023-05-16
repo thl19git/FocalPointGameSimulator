@@ -35,7 +35,7 @@ public class GridPosition implements Comparable<GridPosition> {
   }
 
   @Override
-    public int compareTo(GridPosition position) {
+  public int compareTo(GridPosition position) {
     if (position.getY() == this.y) {
       if (position.getX() == this.x) {
         return 0;
@@ -52,7 +52,7 @@ public class GridPosition implements Comparable<GridPosition> {
   }
 
   @Override
-    public boolean equals(Object o) {
+  public boolean equals(Object o) {
     if (o == this)
       return true;
     if (!(o instanceof GridPosition))
@@ -62,12 +62,12 @@ public class GridPosition implements Comparable<GridPosition> {
   }
 
   @Override
-    public int hashCode() {
+  public int hashCode() {
     return Objects.hash(this.x, this.y);
   }
 
   @Override
-    public String toString() {
+  public String toString() {
     return "(" + x + "," + y + ")";
   }
 }

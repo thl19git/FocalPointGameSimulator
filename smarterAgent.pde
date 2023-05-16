@@ -8,7 +8,7 @@ public class SmarterAgent extends Agent {
   }
 
   @Override
-    public void viewMonuments(ArrayList<Monument> monuments) {
+  public void viewMonuments(ArrayList<Monument> monuments) {
     if (monuments.size() == 0) {
       return;
     }
@@ -31,7 +31,7 @@ public class SmarterAgent extends Agent {
   }
 
   @Override
-    public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
+  public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
     viewMonuments(visibleMonuments);
 
     if (mostRecentTextSeen.equals("Hi")) {

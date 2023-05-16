@@ -8,6 +8,8 @@ public void enableDisableFields(boolean enabled) {
   occupancyField.setEnabled(enabled);
   numMonumentsField.setEnabled(enabled);
   monumentVisibilityField.setEnabled(enabled);
+  localisedMonumentsCheckbox.setEnabled(enabled);
+  districtClustersCheckbox.setEnabled(enabled);
   subgameDroplist.setEnabled(enabled);
 }
 
@@ -29,10 +31,12 @@ public void handlePlayButton(GButton button, GEvent event) {
     int occupancy = occupancyField.getValueI();
     int numMonuments = numMonumentsField.getValueI();
     float monumentVisibility = monumentVisibilityField.getValueF();
+    boolean localisedMonuments = localisedMonumentsCheckbox.isSelected();
+    boolean districtClusters = districtClustersCheckbox.isSelected();
     String subgame = subgameDroplist.getSelectedText();
 
     // Update config
-    config = new Config(gridSize, numAgents, numRounds, occupancy, numClusters, numChoices, numMoves, numMonuments, monumentVisibility, Subgame.valueOf(subgame));
+    config = new Config(gridSize, numAgents, numRounds, occupancy, numClusters, numChoices, numMoves, numMonuments, monumentVisibility, localisedMonuments, districtClusters, Subgame.valueOf(subgame));
 
     // Update any text fields that may have had different values used
     numAgentsField.setText(str(config.getNumAgents()));
@@ -52,8 +56,8 @@ public void handlePlayButton(GButton button, GEvent event) {
     placementStage = PlacementStage.DISTRICTS;
     visInfoPanel.setItemBeingPlaced("Districts");
   } else { // Text is "Start"
-    // Begin the game if grid is covered in districts or has no districts
-    if (server.containsDistricts() && !server.isCompletelyCoveredInDistricts()) {
+    // Begin the game if there are no errors
+    if (!startGameErrorCheck()) {
       return;
     }
     server.beginGame();
@@ -120,4 +124,24 @@ public void handlePlacementButton(GButton button, GEvent event) {
   default:
     println("handlePlacementButton - switch statement default case");
   }
+}
+
+public boolean startGameErrorCheck() {
+  if (server.containsDistricts() && !server.isCompletelyCoveredInDistricts()) {
+    visInfoPanel.setErrorText("Grid must be completely covered in districts.");
+    visInfoPanel.update();
+    return false;
+  }
+  if (config.getLocalisedMonuments() && !server.containsDistricts()) {
+    visInfoPanel.setErrorText("Localised monuments requires districts.");
+    visInfoPanel.update();
+    return false;
+  }
+  if (config.getDistrictClusters() && !server.containsDistricts()) {
+    visInfoPanel.setErrorText("District clusters requires districts.");
+    visInfoPanel.update();
+    return false;
+  }
+  visInfoPanel.setErrorText("");
+  return true;
 }

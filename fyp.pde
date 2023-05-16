@@ -95,7 +95,7 @@ void setup() {
   cursor(CROSS);
 
   // game requires server, requires config
-  config = new Config(10, 30, 10, 4, 6, 4, 4, 4, 3, Subgame.CONSENSUS); // Default settings
+  config = new Config(10, 30, 10, 4, 6, 4, 4, 4, 3, false, false, Subgame.CONSENSUS); // Default settings
   visInfoPanel = new VisAndInfoPanel(this, 8*width/15, 7*height/27, 2*width/5, 2*width/5);
   server = new Server();
 

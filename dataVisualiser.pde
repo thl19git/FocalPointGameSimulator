@@ -8,6 +8,7 @@ public class VisAndInfoPanel {
   private String[] clusterSizeLabels;
   private ArrayList<PVector> winRatesData;
   private String itemBeingPlaced;
+  private String errorText = "";
 
   VisAndInfoPanel(PApplet papplet, int x, int y, int innerWidth, int innerHeight) {
     this.x = x;
@@ -27,6 +28,9 @@ public class VisAndInfoPanel {
       break;
     case PLACING:
       showPlacingText();
+      if (errorText != "") {
+        showErrorText();
+      }
       break;
     default:
       updateClusterSizesChart();
@@ -47,6 +51,14 @@ public class VisAndInfoPanel {
     textAlign(LEFT);
     fill(0);
     text("Currently placing: " + itemBeingPlaced + "\n\nClick on the leftmost button to toggle between item type.\n\nDistrict creation:\n- Drag the mouse to create districts if you wish.\n- Districts must be rectangular and cannot overlap.\n- If you have districts, the whole grid must be covered.\n\nMonument/Agent creation:\n- Click to place monuments/agents.\n- Any unplaced monuments/agents will be randomly placed.\n\nClick 'Reset' to remove all existing placed objects.\nClick 'Reset' again to return to the configuration stage.\nClick 'Start' when you have finished placing objects.", x+50, y+50);
+    fill(255);
+  }
+  
+  public void showErrorText() {
+    textSize(20);
+    textAlign(LEFT);
+    fill(color(255,0,0));
+    text("ERROR: " + errorText, x+50, y+innerHeight-100);
     fill(255);
   }
 
@@ -118,6 +130,10 @@ public class VisAndInfoPanel {
 
   public void setItemBeingPlaced(String itemBeingPlaced) {
     this.itemBeingPlaced = itemBeingPlaced;
+  }
+  
+  public void setErrorText(String errorText) {
+    this.errorText = errorText;
   }
 
   public void reset() {
