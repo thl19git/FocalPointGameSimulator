@@ -101,7 +101,7 @@ public class Agent {
   }
 
   public void viewMonuments(ArrayList<Monument> monuments) {
-    //println("I can see " + monuments.size() + " monuments");
+    //println("I am in district " + currentDistrict + " and I can see " + monuments.size() + " monuments");
   }
 
   public void editMonument(Monument monument) {

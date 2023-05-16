@@ -85,6 +85,10 @@ public class Server {
       agent.setHomeDistrict(district);
       agent.setCurrentDistrict(district);
     }
+    for (Monument monument : monuments.values()) {
+      int district = districtAtPosition.getOrDefault(monument.getPosition(), 0);
+      monument.setDistrict(district);
+    }
   }
 
   private void beginGame() {
@@ -93,8 +97,8 @@ public class Server {
     storeOriginalMonuments();
     originalGridOccupancy = gridOccupancy.clone();
     createAgents();
-    assignDistricts();
     createMonuments();
+    assignDistricts();
     dataLogger.init();
     dataLogger.logConfig(config);
     savedJSON = false;
@@ -362,7 +366,9 @@ public class Server {
     ArrayList<Monument> visibleMonuments = new ArrayList<Monument>();
     for (Monument monument : monuments.values()) {
       if (monument.canBeSeen(agent.getGridPosition())) {
-        visibleMonuments.add(monument);
+        if (!config.getLocalisedMonuments() || (monument.getDistrict() == agent.getCurrentDistrict())) {
+          visibleMonuments.add(monument);
+        }
       }
     }
     return visibleMonuments;
