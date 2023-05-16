@@ -1,18 +1,18 @@
 public class SmarterAgent extends Agent {
   private String mostRecentTextSeen;
-  
-  SmarterAgent(int ID, GridPosition gridPosition, int positionInBox){
+
+  SmarterAgent(int ID, GridPosition gridPosition, int positionInBox) {
     super(ID, gridPosition, positionInBox);
-    
+
     mostRecentTextSeen = "";
   }
-  
+
   @Override
-  public void viewMonuments(ArrayList<Monument> monuments) {
+    public void viewMonuments(ArrayList<Monument> monuments) {
     if (monuments.size() == 0) {
       return;
     }
-    
+
     String monumentText = "";
     if (monuments.size() == 1) {
       Monument monument = monuments.get(0);
@@ -29,11 +29,11 @@ public class SmarterAgent extends Agent {
     }
     mostRecentTextSeen = monumentText;
   }
-  
+
   @Override
-  public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
+    public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
     viewMonuments(visibleMonuments);
-    
+
     if (mostRecentTextSeen.equals("Hi")) {
       return numChoices;
     } else if (mostRecentTextSeen.equals("Lo")) {

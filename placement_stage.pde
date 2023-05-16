@@ -1,5 +1,5 @@
 enum PlacementStage {
   DISTRICTS,
-  MONUMENTS,
-  AGENTS
+    MONUMENTS,
+    AGENTS
 }

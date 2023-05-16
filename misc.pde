@@ -16,10 +16,10 @@ public int positionToIndex(GridPosition position) {
   int x = position.getX();
   int y = position.getY();
   int index = x + config.getGridSize() * y;
-  
+
   return index;
 }
-  
+
 public GridPosition indexToPosition(int index) {
   int gridSize = config.getGridSize();
   return new GridPosition(index % gridSize, index / gridSize);

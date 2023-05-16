@@ -30,28 +30,27 @@ public void handlePlayButton(GButton button, GEvent event) {
     int numMonuments = numMonumentsField.getValueI();
     float monumentVisibility = monumentVisibilityField.getValueF();
     String subgame = subgameDroplist.getSelectedText();
-    
+
     // Update config
     config = new Config(gridSize, numAgents, numRounds, occupancy, numClusters, numChoices, numMoves, numMonuments, monumentVisibility, Subgame.valueOf(subgame));
-    
+
     // Update any text fields that may have had different values used
     numAgentsField.setText(str(config.getNumAgents()));
     numClustersField.setText(str(config.getNumClusters()));
     occupancyField.setText(str(config.getMaxGridOccupancy()));
     numMonumentsField.setText(str(config.getNumMonuments()));
     monumentVisibilityField.setText(str(config.getMonumentVisibility()));
-    
+
     enableDisableFields(false);
-    
+
     button.setText("Start");
     server.startPlacingStage();
-    
+
     placementButton.setEnabled(true);
     placementButton.setVisible(true);
     placementButton.setText("Place agents");
     placementStage = PlacementStage.DISTRICTS;
     visInfoPanel.setItemBeingPlaced("Districts");
-    
   } else { // Text is "Start"
     // Begin the game if grid is covered in districts or has no districts
     if (server.containsDistricts() && !server.isCompletelyCoveredInDistricts()) {
@@ -93,32 +92,32 @@ public void handleResetButton(GButton button, GEvent event) {
 
 public void handlePlacementButton(GButton button, GEvent event) {
   switch (placementStage) {
-    case DISTRICTS:
-      if (config.getNumMonuments() == 0) {
-        button.setText("Place districts");
-      } else {
-        button.setText("Place monuments");
-      }
-      placementStage = PlacementStage.AGENTS;
-      visInfoPanel.setItemBeingPlaced("Agents");
-      break;
-    case MONUMENTS:
+  case DISTRICTS:
+    if (config.getNumMonuments() == 0) {
+      button.setText("Place districts");
+    } else {
+      button.setText("Place monuments");
+    }
+    placementStage = PlacementStage.AGENTS;
+    visInfoPanel.setItemBeingPlaced("Agents");
+    break;
+  case MONUMENTS:
+    button.setText("Place agents");
+    placementStage = PlacementStage.DISTRICTS;
+    visInfoPanel.setItemBeingPlaced("Districts");
+    break;
+  case AGENTS:
+    if (config.getNumMonuments() == 0) {
       button.setText("Place agents");
       placementStage = PlacementStage.DISTRICTS;
       visInfoPanel.setItemBeingPlaced("Districts");
-      break;
-    case AGENTS:
-      if (config.getNumMonuments() == 0) {
-        button.setText("Place agents");
-        placementStage = PlacementStage.DISTRICTS;
-        visInfoPanel.setItemBeingPlaced("Districts");
-      } else {
-        button.setText("Place districts");
-        placementStage = PlacementStage.MONUMENTS;
-        visInfoPanel.setItemBeingPlaced("Monuments");
-      }
-      break;
-    default:
-      println("handlePlacementButton - switch statement default case");
+    } else {
+      button.setText("Place districts");
+      placementStage = PlacementStage.MONUMENTS;
+      visInfoPanel.setItemBeingPlaced("Monuments");
+    }
+    break;
+  default:
+    println("handlePlacementButton - switch statement default case");
   }
 }

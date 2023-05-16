@@ -1,13 +1,13 @@
 public int[] kMeansClustering(int clusters, ArrayList<Agent> agents) {
   HashSet<GridPosition> centroidSet = new HashSet<GridPosition>();
-  
+
   // Performance degrades as clusters / gridSize increases, but okay for now (ensures unique centroids initially)
   while (centroidSet.size() < clusters) {
     centroidSet.add(agents.get(floor(random(agents.size()))).getGridPosition());
   }
   GridPosition[] centroids = new GridPosition[clusters];
   centroidSet.toArray(centroids);
-  
+
   return updateCentroidsAndClusters(clusters, agents, centroids);
 }
 
@@ -15,30 +15,30 @@ public int[] updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, G
   int[] agentsPerCluster;
   while (true) {
     boolean assignmentChanged = false;
-    
+
     int[] xPositions = new int[clusters];
     int[] yPositions = new int[clusters];
     agentsPerCluster = new int[clusters];
-    
+
     for (Agent agent : agents) {
       int newCluster = assignCluster(agent.getGridPosition(), centroids);
       int oldCluster = agent.getClusterNumber();
-      
+
       agent.setClusterNumber(newCluster);
-      
+
       if (newCluster != oldCluster) {
         assignmentChanged = true;
       }
-      
+
       xPositions[newCluster] += agent.getGridPosition().getX();
       yPositions[newCluster] += agent.getGridPosition().getY();
       agentsPerCluster[newCluster]++;
     }
-    
+
     if (!assignmentChanged) {
       break;
     }
-    
+
     for (int index = 0; index < clusters; index++) {
       int numAgents = agentsPerCluster[index];
       if (numAgents == 0) {
@@ -65,7 +65,7 @@ public void sortColors(GridPosition[] centroids) {
 public int assignCluster(GridPosition agentPosition, GridPosition[] centroids) {
   int nearest = -1;
   int minDistance = 10000; // A large number
-  
+
   for (int index = 0; index < centroids.length; index++) {
     GridPosition centroid = centroids[index];
     int squaredDistance = squaredEuclideanDistance(agentPosition, centroid);
@@ -74,19 +74,19 @@ public int assignCluster(GridPosition agentPosition, GridPosition[] centroids) {
       nearest = index;
     }
   }
-  
+
   return nearest;
 }
 
 public int squaredEuclideanDistance(GridPosition agentPosition, GridPosition centroidPosition) {
   int agentX = agentPosition.getX();
   int centroidX = centroidPosition.getX();
-  
+
   int agentY = agentPosition.getY();
   int centroidY = centroidPosition.getY();
-  
+
   int diffX = agentX - centroidX;
   int diffY = agentY - centroidY;
-  
+
   return diffX * diffX + diffY * diffY;
 }

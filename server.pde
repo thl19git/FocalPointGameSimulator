@@ -21,14 +21,14 @@ public class Server {
   private SubgameHandler subgameHandler;
   private DataLogger dataLogger;
   private boolean savedJSON;
-  
+
   Server() {
     resetCollections();
     reset();
     nextAgentID = 1000;
     nextDistrictNumber = 0;
   }
-  
+
   private void resetCollections() {
     districts = new ArrayList<District>();
     districtAtPosition = new HashMap<GridPosition, Integer>();
@@ -40,7 +40,7 @@ public class Server {
     gridOccupancy = new int[gridSize*gridSize];
     originalGridOccupancy = new int[gridSize*gridSize];
   }
-  
+
   private void softReset() {
     dataLogger = new DataLogger();
     subgameHandler = new SubgameHandler();
@@ -50,26 +50,26 @@ public class Server {
     resetCounters();
     visInfoPanel.reset(); // global object, not local
   }
-  
+
   public void hardReset() {
     softReset();
     resetCollections();
   }
-  
+
   public void reset() {
     softReset();
     agents = originalAgents;
     monuments = originalMonuments;
     gridOccupancy = originalGridOccupancy;
   }
-  
+
   private void storeOriginalAgents() {
     originalAgents = new ArrayList<Agent>(agents.size());
     for (Agent agent : agents) {
       originalAgents.add(agent.clone());
     }
   }
-  
+
   private void storeOriginalMonuments() {
     originalMonuments = new HashMap<GridPosition, Monument>();
     for (Monument monument : monuments.values()) {
@@ -78,21 +78,21 @@ public class Server {
       originalMonuments.put(position, clone);
     }
   }
-  
+
   private void assignDistricts() {
     if (districts.size() > 0) {
-      for(Agent agent : agents) {
+      for (Agent agent : agents) {
         int district = districtAtPosition.get(agent.getGridPosition());
         agent.setHomeDistrict(district);
         agent.setCurrentDistrict(district);
       }
-      for(Monument monument : monuments.values()) {
+      for (Monument monument : monuments.values()) {
         int district = districtAtPosition.get(monument.getPosition());
         monument.setDistrict(district);
       }
     }
   }
-  
+
   private void beginGame() {
     paused = false;
     storeOriginalAgents();
@@ -106,7 +106,7 @@ public class Server {
     savedJSON = false;
     stage = GameStage.START;
   }
-  
+
   private void resetCounters() {
     framesToMove = AGENT_MOVE_FRAMES;
     framesForClustering = SHOW_CLUSTERING_FRAMES;
@@ -114,12 +114,12 @@ public class Server {
     movementRounds = config.getNumMoves();
     roundsRemaining = config.getNumRounds();
   }
-  
+
   private void resetGridOccupancy() {
     int gridSize = config.getGridSize();
     gridOccupancy = new int[gridSize*gridSize];
   }
-  
+
   public boolean tryAddAgent(GridPosition position) {
     if (gridOccupancy[positionToIndex(position)] == config.getMaxGridOccupancy() || agents.size() == config.getNumAgents()) {
       return false;
@@ -127,11 +127,12 @@ public class Server {
     incrementGridOccupancy(position);
     int positionInBox = gridOccupancyAtPosition(position);
     //Agent agent = new Agent(nextAgentID++, position, positionInBox);
-    Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
+    //Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
+    Agent agent = new HomelyAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
     agents.add(agent);
     return true;
   }
-  
+
   private void createAgents() {
     GridPosition randomPosition;
     while (agents.size() < config.getNumAgents()) {
@@ -139,44 +140,44 @@ public class Server {
       tryAddAgent(randomPosition);
     }
   }
-  
+
   public boolean tryAddMonument(GridPosition position) {
     if (monuments.containsKey(position) || monuments.size() == config.getNumMonuments()) {
       return false;
     }
-    Monument monument = new Monument(position,"Hi",config.getMonumentVisibility());
+    Monument monument = new Monument(position, "Hi", config.getMonumentVisibility());
     monuments.put(position, monument);
     return true;
   }
-  
+
   private void createMonuments() {
     GridPosition randomPosition;
     while (monuments.size() < config.getNumMonuments()) {
-        randomPosition = randomGridPosition();
-        tryAddMonument(randomPosition);
+      randomPosition = randomGridPosition();
+      tryAddMonument(randomPosition);
     }
   }
-  
+
   public void togglePaused() {
     paused = !paused;
   }
-  
+
   public ArrayList<Agent> getAgents() {
     return agents;
   }
-  
+
   public ArrayList<Monument> getMonuments() {
     return new ArrayList<Monument>(monuments.values());
   }
-  
+
   public ArrayList<District> getDistricts() {
     return districts;
   }
-  
+
   public int getFramesToMove() {
     return framesToMove;
   }
-  
+
   private void populateDistrictPositionMap(District district) {
     for (int x = district.getTopLeft().getX(); x <= district.getBottomRight().getX(); x++) {
       for (int y = district.getTopLeft().getY(); y <= district.getBottomRight().getY(); y++) {
@@ -185,7 +186,7 @@ public class Server {
     }
     nextDistrictNumber++;
   }
-  
+
   public boolean districtsOverlap(District d1, District d2) {
     if (d1.getBottomRight().getY() < d2.getTopLeft().getY() || d2.getBottomRight().getY() < d1.getTopLeft().getY()) {
       return false;
@@ -195,7 +196,7 @@ public class Server {
     }
     return true;
   }
-  
+
   public boolean tryAddDistrict(District newDistrict) {
     for (District district : districts) {
       if (districtsOverlap(district, newDistrict)) {
@@ -206,23 +207,23 @@ public class Server {
     populateDistrictPositionMap(newDistrict);
     return true;
   }
-  
+
   public boolean containsDistricts() {
     return districts.size() > 0;
   }
-  
+
   public boolean containsMonuments() {
-    return monuments.size() > 0; 
+    return monuments.size() > 0;
   }
-  
+
   public boolean containsAgents() {
     return agents.size() > 0;
   }
-  
+
   public boolean containsPlacedObjects() {
     return containsDistricts() || containsMonuments() || containsAgents();
   }
-  
+
   public void removePlacedObjects() {
     districts = new ArrayList<District>();
     monuments = new HashMap<GridPosition, Monument>();
@@ -231,7 +232,7 @@ public class Server {
     nextAgentID = 1000;
     nextDistrictNumber = 0;
   }
-  
+
   public boolean isCompletelyCoveredInDistricts() {
     int totalSquares = config.getGridSize() * config.getGridSize();
     int coveredSquares = 0;
@@ -240,14 +241,14 @@ public class Server {
     }
     return coveredSquares == totalSquares;
   }
-  
+
   private ArrayList<GridPosition> getValidPositions(GridPosition position) {
     ArrayList<GridPosition> validPositions = new ArrayList<GridPosition>();
     validPositions.add(position); //Current position is valid
-    
+
     int x = position.getX();
     int y = position.getY();
-    
+
     if (x > 0 && positionHasSpace(x-1, y)) {
       validPositions.add(new GridPosition(x-1, y));
     }
@@ -262,59 +263,59 @@ public class Server {
     }
     return validPositions;
   }
-  
+
   private boolean positionHasSpace(int x, int y) {
     int index = x + config.getGridSize() * y;
     int occupancy = gridOccupancy[index];
-    
+
     return occupancy < config.getMaxGridOccupancy();
   }
-  
+
   private void decrementGridOccupancy(GridPosition position) {
     changeGridOccupancy(position, -1);
   }
-  
+
   private void incrementGridOccupancy(GridPosition position) {
     changeGridOccupancy(position, 1);
   }
-  
+
   private void changeGridOccupancy(GridPosition position, int amount) {
     int index = positionToIndex(position);
-    
+
     gridOccupancy[index] += amount;
   }
-  
+
   public int gridOccupancyAtIndex(int index) {
     return gridOccupancy[index];
   }
-  
+
   public int gridOccupancyAtPosition(GridPosition position) {
     int index = positionToIndex(position);
-    
+
     return gridOccupancyAtIndex(index);
   }
-  
+
   public int oldGridOccupancyAtIndex(int index) {
     return oldGridOccupancy[index];
   }
-  
+
   public int oldGridOccupancyAtPosition(GridPosition position) {
     int index = positionToIndex(position);
-    
+
     return oldGridOccupancyAtIndex(index);
   }
-  
+
   private void allocateNewInternalPositions() {
     int gridSize = config.getGridSize();
     int allocated[] = new int[gridSize*gridSize];
     for (Agent agent : agents) {
-        GridPosition nextPosition = agent.getNextGridPosition();
-        int gridIndex = positionToIndex(nextPosition);
-        allocated[gridIndex]++;
-        agent.setNextPositionInBox(allocated[gridIndex]);
+      GridPosition nextPosition = agent.getNextGridPosition();
+      int gridIndex = positionToIndex(nextPosition);
+      allocated[gridIndex]++;
+      agent.setNextPositionInBox(allocated[gridIndex]);
     }
   }
-  
+
   public void startPlacingStage() {
     stage = GameStage.PLACING;
     int gridSize = config.getGridSize();
@@ -322,11 +323,11 @@ public class Server {
     originalGridOccupancy = new int[gridSize*gridSize];
     visInfoPanel.reset();
   }
-  
+
   public GameStage getStage() {
     return stage;
   }
-  
+
   private void gatherVotes(HashMap<Integer, Integer> votes) {
     int choices = config.getNumChoices();
     for (Agent agent : agents) {
@@ -334,7 +335,7 @@ public class Server {
       votes.put(agent.getID(), vote);
     }
   }
-  
+
   private void distributeVoteResults() {
     int winCount = 0;
     for (Agent agent : agents) {
@@ -348,7 +349,7 @@ public class Server {
     float winRate = (float)winCount / config.getNumAgents();
     visInfoPanel.addNewWinRate(winRate);
   }
-  
+
   private void conductVote() {
     int clusters = config.getNumClusters();
     HashMap<Integer, Integer> votes = new HashMap<Integer, Integer>();
@@ -358,11 +359,11 @@ public class Server {
     handleMonumentEditing(); //Agents can update monuments after receiving game results
     dataLogger.logRound(agents, votes, voteResults, config.getNumClusters());
   }
-  
+
   public boolean getAgentResult(int ID) {
     return voteResults.get(ID);
   }
-  
+
   private ArrayList<Monument> monumentsVisibleForAgent(Agent agent) {
     ArrayList<Monument> visibleMonuments = new ArrayList<Monument>();
     for (Monument monument : monuments.values()) {
@@ -372,13 +373,13 @@ public class Server {
     }
     return visibleMonuments;
   }
-  
+
   private void handleMonumentViewing() {
     for (Agent agent : agents) {
       agent.viewMonuments(monumentsVisibleForAgent(agent));
     }
   }
-  
+
   private void handleMonumentEditing() {
     for (Agent agent : agents) {
       GridPosition agentPosition = agent.getGridPosition();
@@ -387,7 +388,7 @@ public class Server {
       }
     }
   }
-  
+
   private ArrayList<Integer> districtsOfPositions(ArrayList<GridPosition> positions) {
     ArrayList<Integer> districtsArray = new ArrayList<Integer>();
     for (GridPosition position : positions) {
@@ -395,7 +396,7 @@ public class Server {
     }
     return districtsArray;
   }
-  
+
   private void startStage() {
     if (roundsRemaining > 0) {
       roundsRemaining--;
@@ -405,7 +406,7 @@ public class Server {
       stage = GameStage.FINISH;
     }
   }
-  
+
   private void moveDecisionStage() {
     oldGridOccupancy = gridOccupancy.clone();
     for (Agent agent : agents) {
@@ -416,7 +417,7 @@ public class Server {
       GridPosition nextPosition = validPositions.get(nextPositionIndex);
       agent.setNextGridPosition(nextPosition);
       agent.setCurrentDistrict(districtAtPosition.get(nextPosition));
-      
+
       if (validPositions.get(nextPositionIndex) != position) { // i.e. moving square
         decrementGridOccupancy(position);
         incrementGridOccupancy(validPositions.get(nextPositionIndex));
@@ -425,7 +426,7 @@ public class Server {
     allocateNewInternalPositions();
     stage = GameStage.AGENTS_MOVING;
   }
-  
+
   private void agentsMovingStage() {
     framesToMove--;
     if (framesToMove == 0) {
@@ -438,7 +439,7 @@ public class Server {
     }
     game.update();
   }
-  
+
   private void communicationStage() {
     movementRounds--;
     if (movementRounds == 0) { // Monument viewing happens during vote
@@ -450,7 +451,7 @@ public class Server {
       stage = GameStage.MOVE_DECISION;
     }
   }
-  
+
   private void clusteringStage() {
     if (framesForClustering == SHOW_CLUSTERING_FRAMES) {
       int[] agentsPerCluster = kMeansClustering(config.getNumClusters(), agents);
@@ -463,7 +464,7 @@ public class Server {
       framesForClustering = SHOW_CLUSTERING_FRAMES;
     }
   }
-  
+
   private void votingStage() {
     if (framesForVotes == SHOW_VOTES_FRAMES) {
       conductVote();
@@ -475,50 +476,50 @@ public class Server {
       framesForVotes = SHOW_VOTES_FRAMES;
     }
   }
-  
+
   private void finishStage() {
     if (!savedJSON) {
       dataLogger.saveJSON();
       savedJSON = true;
     }
   }
-  
+
   public void run() {
     if (paused) {
       return;
     }
-    
+
     switch (stage) {
-      case CONFIGURATION:
-        // Do nothing
-        break;
-      case PLACING:
-        game.update();
-        break;
-      case START:
-        startStage();
-        break;
-      case MOVE_DECISION:
-        moveDecisionStage();
-        break;
-      case AGENTS_MOVING:
-        agentsMovingStage();
-        break;
-      case COMMUNICATION:
-        communicationStage();
-        break;
-      case CLUSTERING:
-        clusteringStage();
-        break;
-      case VOTING:
-        votingStage();
-        break;
-      case FINISH:
-        finishStage();
-        break;
-      default:
-        println("Stage not implemented, quitting");
-        exit();
+    case CONFIGURATION:
+      // Do nothing
+      break;
+    case PLACING:
+      game.update();
+      break;
+    case START:
+      startStage();
+      break;
+    case MOVE_DECISION:
+      moveDecisionStage();
+      break;
+    case AGENTS_MOVING:
+      agentsMovingStage();
+      break;
+    case COMMUNICATION:
+      communicationStage();
+      break;
+    case CLUSTERING:
+      clusteringStage();
+      break;
+    case VOTING:
+      votingStage();
+      break;
+    case FINISH:
+      finishStage();
+      break;
+    default:
+      println("Stage not implemented, quitting");
+      exit();
     }
   }
 }

@@ -8,7 +8,7 @@ public class VisAndInfoPanel {
   private String[] clusterSizeLabels;
   private ArrayList<PVector> winRatesData;
   private String itemBeingPlaced;
-  
+
   VisAndInfoPanel(PApplet papplet, int x, int y, int innerWidth, int innerHeight) {
     this.x = x;
     this.y = y;
@@ -16,24 +16,24 @@ public class VisAndInfoPanel {
     this.innerHeight = innerHeight;
     this.papplet = papplet;
   }
-  
+
   public void update() {
     noStroke();
     fill(255);
-    rect(x,y,innerWidth,innerHeight);
+    rect(x, y, innerWidth, innerHeight);
     switch (server.getStage()) {
-      case CONFIGURATION:
-        showConfigurationText();
-        break;
-      case PLACING:
-        showPlacingText();
-        break;
-      default:
-        updateClusterSizesChart();
-        updateWinRateChart();
+    case CONFIGURATION:
+      showConfigurationText();
+      break;
+    case PLACING:
+      showPlacingText();
+      break;
+    default:
+      updateClusterSizesChart();
+      updateWinRateChart();
     }
   }
-  
+
   public void showConfigurationText() {
     textSize(20);
     textAlign(LEFT);
@@ -41,7 +41,7 @@ public class VisAndInfoPanel {
     text("Configuration:\n- Use the text cells to configure an experiment.\n- Any incompatibilities will be automatically fixed.\n- Click 'Configure' when finished.", x+50, y+50);
     fill(255);
   }
-  
+
   public void showPlacingText() {
     textSize(20);
     textAlign(LEFT);
@@ -49,11 +49,11 @@ public class VisAndInfoPanel {
     text("Currently placing: " + itemBeingPlaced + "\n\nClick on the leftmost button to toggle between item type.\n\nDistrict creation:\n- Drag the mouse to create districts if you wish.\n- Districts must be rectangular and cannot overlap.\n- If you have districts, the whole grid must be covered.\n\nMonument/Agent creation:\n- Click to place monuments/agents.\n- Any unplaced monuments/agents will be randomly placed.\n\nClick 'Reset' to remove all existing placed objects.\nClick 'Reset' again to return to the configuration stage.\nClick 'Start' when you have finished placing objects.", x+50, y+50);
     fill(255);
   }
-  
+
   public void updateClusterSizesChart() {
     clusterSizesChart.setData(compressedClusterSizeCounts);
     clusterSizesChart.setBarLabels(clusterSizeLabels);
-    clusterSizesChart.setBarColour(color(200,80,80,100));
+    clusterSizesChart.setBarColour(color(200, 80, 80, 100));
     clusterSizesChart.setBarGap(2);
     clusterSizesChart.showValueAxis(true);
     clusterSizesChart.setValueAxisLabel("Number of clusters");
@@ -62,7 +62,7 @@ public class VisAndInfoPanel {
     clusterSizesChart.setMinValue(0);
     clusterSizesChart.draw(x+10, y+10, innerWidth/2-20, innerHeight/2-20);
   }
-  
+
   public void updateWinRateChart() {
     if (winRatesData.size() == 0) {
       return;
@@ -72,7 +72,7 @@ public class VisAndInfoPanel {
       winRateChart.showXAxis(true);
     }
     winRateChart.showYAxis(true);
-    winRateChart.setPointColour(color(180,50,50,100));
+    winRateChart.setPointColour(color(180, 50, 50, 100));
     winRateChart.setPointSize(5);
     winRateChart.setLineWidth(2);
     winRateChart.setXAxisLabel("Round");
@@ -85,11 +85,11 @@ public class VisAndInfoPanel {
     winRateChart.setMaxY(1);
     winRateChart.draw(x + innerWidth/2 + 10, y+10, innerWidth/2-20, innerHeight/2-20);
   }
-  
+
   public void addNewWinRate(float winRate) {
     winRatesData.add(new PVector(winRatesData.size()+1, winRate));
   }
-  
+
   public void updateClusterCounts(int[] agentsPerCluster) {
     for (int index = 0; index < agentsPerCluster.length; index++) {
       clusterSizeCounts[agentsPerCluster[index]]++;
@@ -115,14 +115,14 @@ public class VisAndInfoPanel {
       break;
     }
   }
-  
+
   public void setItemBeingPlaced(String itemBeingPlaced) {
     this.itemBeingPlaced = itemBeingPlaced;
   }
-  
+
   public void reset() {
     compressedClusterSizeCounts = new float[]{};
-    clusterSizeCounts = new float[config.getNumAgents()];
+    clusterSizeCounts = new float[config.getNumAgents()+1];
     Arrays.fill(clusterSizeCounts, 0);
     clusterSizeLabels = new String[]{};
     winRatesData = new ArrayList<PVector>();

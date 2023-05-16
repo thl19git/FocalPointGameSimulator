@@ -1,41 +1,41 @@
-public class GridPosition implements Comparable<GridPosition>{
+public class GridPosition implements Comparable<GridPosition> {
   private int x;
   private int y;
-  
+
   GridPosition(int xCoord, int yCoord) {
     setPosition(xCoord, yCoord);
   }
-  
+
   public void setPosition(int xCoord, int yCoord) {
     setX(xCoord);
     setY(yCoord);
   }
-  
+
   public void setX(int xCoord) {
     x = clamp(0, config.getGridSize(), xCoord);
   }
-  
+
   public void setY(int yCoord) {
     y = clamp(0, config.getGridSize(), yCoord);
   }
-  
+
   public int getX() {
     return x;
   }
-  
+
   public int getY() {
     return y;
   }
-  
+
   public float distanceTo(GridPosition position) {
     int diffX = abs(this.x - position.getX());
     int diffY = abs(this.y - position.getY());
-    
+
     return sqrt(diffX*diffX + diffY*diffY);
   }
-  
+
   @Override
-  public int compareTo(GridPosition position) {
+    public int compareTo(GridPosition position) {
     if (position.getY() == this.y) {
       if (position.getX() == this.x) {
         return 0;
@@ -50,9 +50,9 @@ public class GridPosition implements Comparable<GridPosition>{
       return 1;
     }
   }
-  
+
   @Override
-  public boolean equals(Object o) {
+    public boolean equals(Object o) {
     if (o == this)
       return true;
     if (!(o instanceof GridPosition))
@@ -60,14 +60,14 @@ public class GridPosition implements Comparable<GridPosition>{
     GridPosition other = (GridPosition) o;
     return this.x == other.getX() && this.y== other.getY();
   }
-  
+
   @Override
-  public int hashCode() {
+    public int hashCode() {
     return Objects.hash(this.x, this.y);
   }
-  
+
   @Override
-  public String toString() {
+    public String toString() {
     return "(" + x + "," + y + ")";
   }
 }
