@@ -105,7 +105,7 @@ void setup() {
   resetButton = new GButton(this, 1000, 200, 150, 50, "Reset");
   resetButton.addEventHandler(this, "handleResetButton");
   
-  placementButton = new GButton(this, 205, 200, 200, 50, "Place monuments");
+  placementButton = new GButton(this, 205, 200, 200, 50, "Place agents");
   placementButton.addEventHandler(this, "handlePlacementButton");
   placementButton.setEnabled(false);
   placementButton.setVisible(false);

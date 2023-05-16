@@ -21,27 +21,43 @@ public class Server {
   private boolean savedJSON;
   
   Server() {
+    resetCollections();
     reset();
-    districts = new ArrayList<District>();
-    monuments = new HashMap<GridPosition, Monument>();
-    agents = new ArrayList<Agent>();
     nextAgentID = 1000;
-    int gridSize = config.getGridSize();
-    gridOccupancy = new int[gridSize*gridSize];
+    
   }
   
-  public void reset() {
+  private void resetCollections() {
+    districts = new ArrayList<District>();
+    monuments = new HashMap<GridPosition, Monument>();
+    originalMonuments = new HashMap<GridPosition, Monument>();
+    agents = new ArrayList<Agent>();
+    originalAgents = new ArrayList<Agent>();
+    int gridSize = config.getGridSize();
+    gridOccupancy = new int[gridSize*gridSize];
+    originalGridOccupancy = new int[gridSize*gridSize];
+  }
+  
+  private void softReset() {
     dataLogger = new DataLogger();
     subgameHandler = new SubgameHandler();
     paused = false;
     stage = GameStage.CONFIGURATION;
     agentColors = INITIAL_AGENT_COLORS.clone(); // global variable, not local
-    agents = originalAgents;
-    monuments = originalMonuments;
-    resetGridOccupancy();
-    gridOccupancy = originalGridOccupancy;
     resetCounters();
     visInfoPanel.reset(); // global object, not local
+  }
+  
+  public void hardReset() {
+    softReset();
+    resetCollections();
+  }
+  
+  public void reset() {
+    softReset();
+    agents = originalAgents;
+    monuments = originalMonuments;
+    gridOccupancy = originalGridOccupancy;
   }
   
   private void storeOriginalAgents() {
@@ -272,6 +288,10 @@ public class Server {
   
   public void startPlacingStage() {
     stage = GameStage.PLACING;
+    int gridSize = config.getGridSize();
+    gridOccupancy = new int[gridSize*gridSize];
+    originalGridOccupancy = new int[gridSize*gridSize];
+    visInfoPanel.reset();
   }
   
   public GameStage getStage() {

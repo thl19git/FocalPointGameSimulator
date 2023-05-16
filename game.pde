@@ -320,10 +320,8 @@ public class Game extends GViewListener {
   }
   
   private void createNewAgent() {
-    println("Trying to add an agent");
     GridPosition position = coordsToGridPosition(eX,eY);
-    boolean success = server.tryAddAgent(position);
-    println(success);
+    server.tryAddAgent(position);
   }
   
   public void mousePressed() {
