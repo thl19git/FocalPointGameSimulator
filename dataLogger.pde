@@ -26,6 +26,8 @@ public class DataLogger {
     data.setInt("maxOccupancy", conf.getMaxGridOccupancy());
     data.setInt("numMonuments", conf.getNumMonuments());
     data.setFloat("monumentVisibility", conf.getMonumentVisibility());
+    data.setBoolean("localisedMonuments", conf.getLocalisedMonuments());
+    data.setBoolean("districtClusters", conf.getDistrictClusters());
     data.setString("subgame", conf.getSubgame().name());
   }
 
