@@ -117,6 +117,12 @@ public class Server {
     int gridSize = config.getGridSize();
     gridOccupancy = new int[gridSize*gridSize];
   }
+  
+  private void createNewGridOccupancy() {
+    int gridSize = config.getGridSize();
+    gridOccupancy = new int[gridSize*gridSize];
+    originalGridOccupancy = new int[gridSize*gridSize];
+  }
 
   public boolean tryAddAgent(GridPosition position) {
     if (gridOccupancy[positionToIndex(position)] == config.getMaxGridOccupancy() || agents.size() == config.getNumAgents()) {
@@ -125,8 +131,8 @@ public class Server {
     incrementGridOccupancy(position);
     int positionInBox = gridOccupancyAtPosition(position);
     //Agent agent = new Agent(nextAgentID++, position, positionInBox);
-    //Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
-    Agent agent = new HomelyAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
+    Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
+    //Agent agent = new HomelyAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
     agents.add(agent);
     return true;
   }
@@ -320,9 +326,6 @@ public class Server {
 
   public void startPlacingStage() {
     stage = GameStage.PLACING;
-    int gridSize = config.getGridSize();
-    gridOccupancy = new int[gridSize*gridSize];
-    originalGridOccupancy = new int[gridSize*gridSize];
     visInfoPanel.reset();
   }
 
@@ -359,7 +362,8 @@ public class Server {
     voteResults = subgameHandler.computeResults(numClusters, config.getNumChoices(), agents, votes);
     distributeVoteResults();
     handleMonumentEditing(); //Agents can update monuments after receiving game results
-    dataLogger.logRound(agents, votes, voteResults, numClusters);
+    ArrayList<Integer> winningClusterSizes = dataLogger.logRound(agents, votes, voteResults, numClusters);
+    visInfoPanel.addWinningClusterSizes(winningClusterSizes);
   }
 
   public boolean getAgentResult(int ID) {

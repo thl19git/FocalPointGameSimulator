@@ -31,7 +31,7 @@ public class DataLogger {
     data.setString("subgame", conf.getSubgame().name());
   }
 
-  public void logRound(ArrayList<Agent> agents, HashMap<Integer, Integer> votes, HashMap<Integer, Boolean> results, int numClusters) {
+  public ArrayList<Integer> logRound(ArrayList<Agent> agents, HashMap<Integer, Integer> votes, HashMap<Integer, Boolean> results, int numClusters) {
     roundNumber++;
     round = new JSONObject();
     round.setInt("number", roundNumber);
@@ -61,6 +61,19 @@ public class DataLogger {
 
     round.setJSONArray("clusters", clusters);
     rounds.append(round);
+    
+    // Create an array with the sizes of winning clusters
+    ArrayList<Integer> winningSizes = new ArrayList<Integer>();
+    
+    for (int cluster = 0; cluster < numClusters; cluster++) {
+      JSONObject agentsObject = clusters.getJSONObject(cluster);
+      JSONArray agentsArray = agentsObject.getJSONArray("agents");
+      if (agentsArray.size() > 0 && agentsArray.getJSONObject(0).getBoolean("result")) {
+        winningSizes.add(agentsArray.size());
+      }
+    }
+    
+    return winningSizes;
   }
 
   public void saveJSON() {

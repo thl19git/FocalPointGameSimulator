@@ -1,10 +1,13 @@
 public class VisAndInfoPanel {
   private BarChart clusterSizesChart;
+  private BarChart winRateByClusterSizeChart;
   private XYChart winRateChart;
   private int x, y, innerWidth, innerHeight;
   private PApplet papplet;
   private float[] clusterSizeCounts;
   private float[] compressedClusterSizeCounts;
+  private float[] winsByClusterSize;
+  private float[] compressedWinRateByClusterSize;
   private String[] clusterSizeLabels;
   private ArrayList<PVector> winRatesData;
   private String itemBeingPlaced;
@@ -35,6 +38,7 @@ public class VisAndInfoPanel {
     default:
       updateClusterSizesChart();
       updateWinRateChart();
+      updateWinRateByClusterSizeChart();
     }
   }
 
@@ -97,6 +101,35 @@ public class VisAndInfoPanel {
     winRateChart.setMaxY(1);
     winRateChart.draw(x + innerWidth/2 + 10, y+10, innerWidth/2-20, innerHeight/2-20);
   }
+  
+  private void updateWinRateByClusterSizeChart() {
+    winRateByClusterSizeChart.setData(compressedWinRateByClusterSize);
+    winRateByClusterSizeChart.setBarLabels(clusterSizeLabels);
+    winRateByClusterSizeChart.setBarColour(color(200, 80, 80, 100));
+    winRateByClusterSizeChart.setBarGap(2);
+    winRateByClusterSizeChart.showValueAxis(true);
+    winRateByClusterSizeChart.setValueFormat("#%");
+    winRateByClusterSizeChart.setValueAxisLabel("Win rate");
+    winRateByClusterSizeChart.showCategoryAxis(true);
+    winRateByClusterSizeChart.setCategoryAxisLabel("Cluster size (# agents)");
+    winRateByClusterSizeChart.setMinValue(0);
+    winRateByClusterSizeChart.draw(x+10, y+innerHeight/2+10, innerWidth/2-20, innerHeight/2-20);
+  }
+  
+  public void addWinningClusterSizes(ArrayList<Integer> winningClusterSizes) {
+    for (int size : winningClusterSizes) {
+      winsByClusterSize[size]++;
+    }
+    
+     compressedWinRateByClusterSize = new float[compressedClusterSizeCounts.length];
+     for (int index = 0; index < compressedClusterSizeCounts.length; index++) {
+       if (compressedClusterSizeCounts[index] == 0) {
+         compressedWinRateByClusterSize[index] = 0;
+       } else {
+         compressedWinRateByClusterSize[index] = winsByClusterSize[index] / compressedClusterSizeCounts[index];
+       }
+     }
+  }
 
   public void addNewWinRate(float winRate) {
     winRatesData.add(new PVector(winRatesData.size()+1, winRate));
@@ -139,10 +172,13 @@ public class VisAndInfoPanel {
   public void reset() {
     compressedClusterSizeCounts = new float[]{};
     clusterSizeCounts = new float[config.getNumAgents()+1];
+    compressedWinRateByClusterSize = new float[]{};
+    winsByClusterSize = new float[config.getNumAgents()+1];
     Arrays.fill(clusterSizeCounts, 0);
     clusterSizeLabels = new String[]{};
     winRatesData = new ArrayList<PVector>();
     clusterSizesChart = new BarChart(papplet);
+    winRateByClusterSizeChart = new BarChart(papplet);
     winRateChart = new XYChart(papplet);
   }
 }

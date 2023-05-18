@@ -48,6 +48,8 @@ public void handlePlayButton(GButton button, GEvent event) {
     enableDisableFields(false);
 
     button.setText("Start");
+    
+    server.createNewGridOccupancy();
     server.startPlacingStage();
 
     placementButton.setEnabled(true);

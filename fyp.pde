@@ -10,7 +10,7 @@ import java.util.Objects;
 final int START_ID = 1000;
 final float AGENT_WIDTH = 0.6;
 final int AGENT_MOVE_FRAMES = 30;
-final int SHOW_CLUSTERING_FRAMES = 30;
+final int SHOW_CLUSTERING_FRAMES = 10;
 final int SHOW_VOTES_FRAMES = 60;
 final color[] INITIAL_AGENT_COLORS = {color(128, 0, 128), color(128, 128, 0), color(0, 128, 128), color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)};
 final color BLACK = color(0, 0, 0);
@@ -124,7 +124,7 @@ void setup() {
   districtClustersCheckbox.addEventHandler(this, "handleDistrictClustersCheckboxEvents");
 
   numAgentsField = createTextField(295, 140, 1, 100, 30);
-  gridSizeField = createTextField(445, 140, 3, 10, 10);
+  gridSizeField = createTextField(445, 140, 3, 20, 10);
   numRoundsField = createTextField(595, 140, 1, 1000, 10);
   numClustersField = createTextField(745, 140, 1, 6, 6);
   numChoicesField = createTextField(895, 140, 1, 1000, 4);
