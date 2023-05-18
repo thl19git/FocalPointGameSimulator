@@ -7,6 +7,7 @@ public class Server {
   private HashMap<GridPosition, Monument> monuments;
   private ArrayList<District> districts;
   private HashMap<GridPosition, Integer> districtAtPosition;
+  private float[] clusterDistancesToMonuments;
   private int[] originalGridOccupancy;
   private int[] gridOccupancy;
   private int[] oldGridOccupancy;
@@ -359,11 +360,15 @@ public class Server {
     int numClusters = config.getNumClusters();
     HashMap<Integer, Integer> votes = new HashMap<Integer, Integer>();
     gatherVotes(votes);
-    voteResults = subgameHandler.computeResults(numClusters, config.getNumChoices(), agents, votes);
+    boolean[] clusterResults = new boolean[numClusters];
+    voteResults = subgameHandler.computeResults(numClusters, config.getNumChoices(), agents, votes, clusterResults);
     distributeVoteResults();
     handleMonumentEditing(); //Agents can update monuments after receiving game results
     ArrayList<Integer> winningClusterSizes = dataLogger.logRound(agents, votes, voteResults, numClusters);
     visInfoPanel.addWinningClusterSizes(winningClusterSizes);
+    if (!config.getLocalisedMonuments()) {
+      visInfoPanel.updateWinRateByMonumentProximity(clusterResults, clusterDistancesToMonuments);
+    }
   }
 
   public boolean getAgentResult(int ID) {
@@ -394,6 +399,41 @@ public class Server {
       if (monuments.containsKey(agentPosition)) {
         agent.editMonument(monuments.get(agentPosition));
       }
+    }
+  }
+
+  private FractionalGridPosition[] calculateClusterMeans(int[] agentsPerCluster) {
+    int numClusters = config.getNumClusters();
+    int[] xSums = new int[numClusters];
+    int[] ySums = new int[numClusters];
+    for (Agent agent : agents) {
+      GridPosition position = agent.getGridPosition();
+      int cluster = agent.getClusterNumber();
+      xSums[cluster] += position.getX();
+      ySums[cluster] += position.getY();
+    }
+    FractionalGridPosition[] means = new FractionalGridPosition[numClusters];
+    for (int index = 0; index < numClusters; index++) {
+      float xMean = (float)xSums[index]/agentsPerCluster[index]; // Potentially dividing by zero???
+      float yMean = (float)ySums[index]/agentsPerCluster[index];
+      means[index] = new FractionalGridPosition(xMean, yMean);
+    }
+    return means;
+  }
+  
+  private void findNearestMonuments(FractionalGridPosition[] means) {
+    int numClusters = config.getNumClusters();
+    clusterDistancesToMonuments = new float[numClusters];
+    for (int index = 0; index < numClusters; index++) {
+      FractionalGridPosition position = means[index];
+      float shortestDistance = 1000; // some large number
+      for (Monument monument : monuments.values()) {
+        float distance = position.distanceTo(monument.getPosition());
+        if (distance < shortestDistance) {
+          shortestDistance = distance;
+        }
+      }
+      clusterDistancesToMonuments[index] = shortestDistance;
     }
   }
 
@@ -483,6 +523,10 @@ public class Server {
         agentsPerCluster = districtClustering();
       } else {
         agentsPerCluster = kMeansClustering(config.getNumClusters(), agents);
+      }
+      if (config.getNumMonuments() > 0 && !config.getLocalisedMonuments()) {
+        FractionalGridPosition[] means = calculateClusterMeans(agentsPerCluster);
+        findNearestMonuments(means);
       }
       visInfoPanel.updateClusterCounts(agentsPerCluster);
       game.update();

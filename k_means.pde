@@ -1,17 +1,17 @@
 public int[] kMeansClustering(int clusters, ArrayList<Agent> agents) {
-  HashSet<GridPosition> centroidSet = new HashSet<GridPosition>();
+  HashSet<FractionalGridPosition> centroidSet = new HashSet<FractionalGridPosition>();
 
   // Performance degrades as clusters / gridSize increases, but okay for now (ensures unique centroids initially)
   while (centroidSet.size() < clusters) {
-    centroidSet.add(agents.get(floor(random(agents.size()))).getGridPosition());
+    centroidSet.add(new FractionalGridPosition(agents.get(floor(random(agents.size()))).getGridPosition()));
   }
-  GridPosition[] centroids = new GridPosition[clusters];
+  FractionalGridPosition[] centroids = new FractionalGridPosition[clusters];
   centroidSet.toArray(centroids);
 
   return updateCentroidsAndClusters(clusters, agents, centroids);
 }
 
-public int[] updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, GridPosition[] centroids) {
+public int[] updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, FractionalGridPosition[] centroids) {
   int[] agentsPerCluster;
   while (true) {
     boolean assignmentChanged = false;
@@ -44,17 +44,17 @@ public int[] updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, G
       if (numAgents == 0) {
         continue;
       }
-      int xPosition = xPositions[index] / numAgents;
-      int yPosition = yPositions[index] / numAgents;
-      centroids[index] = new GridPosition(xPosition, yPosition);
+      float xPosition = xPositions[index] / numAgents;
+      float yPosition = yPositions[index] / numAgents;
+      centroids[index] = new FractionalGridPosition(xPosition, yPosition);
     }
   }
   sortColors(centroids); // Reduces amount of color switching (not perfect but better than nothing)
   return agentsPerCluster;
 }
 
-public void sortColors(GridPosition[] centroids) {
-  GridPosition[] sortedCentroids = centroids.clone();
+public void sortColors(FractionalGridPosition[] centroids) {
+  FractionalGridPosition[] sortedCentroids = centroids.clone();
   Arrays.sort(sortedCentroids);
   for (int index = 0; index < centroids.length; index++) {
     int unsortedIndex = Arrays.asList(centroids).indexOf(sortedCentroids[index]);
@@ -62,13 +62,13 @@ public void sortColors(GridPosition[] centroids) {
   }
 }
 
-public int assignCluster(GridPosition agentPosition, GridPosition[] centroids) {
+public int assignCluster(GridPosition agentPosition, FractionalGridPosition[] centroids) {
   int nearest = -1;
-  int minDistance = 10000; // A large number
+  float minDistance = 10000; // A large number
 
   for (int index = 0; index < centroids.length; index++) {
-    GridPosition centroid = centroids[index];
-    int squaredDistance = squaredEuclideanDistance(agentPosition, centroid);
+    FractionalGridPosition centroid = centroids[index];
+    float squaredDistance = squaredEuclideanDistance(agentPosition, centroid);
     if (squaredDistance < minDistance) {
       minDistance = squaredDistance;
       nearest = index;
@@ -78,15 +78,15 @@ public int assignCluster(GridPosition agentPosition, GridPosition[] centroids) {
   return nearest;
 }
 
-public int squaredEuclideanDistance(GridPosition agentPosition, GridPosition centroidPosition) {
+public float squaredEuclideanDistance(GridPosition agentPosition, FractionalGridPosition centroidPosition) {
   int agentX = agentPosition.getX();
-  int centroidX = centroidPosition.getX();
+  float centroidX = centroidPosition.getX();
 
   int agentY = agentPosition.getY();
-  int centroidY = centroidPosition.getY();
+  float centroidY = centroidPosition.getY();
 
-  int diffX = agentX - centroidX;
-  int diffY = agentY - centroidY;
+  float diffX = agentX - centroidX;
+  float diffY = agentY - centroidY;
 
   return diffX * diffX + diffY * diffY;
 }

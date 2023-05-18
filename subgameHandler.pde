@@ -16,19 +16,19 @@ public class SubgameHandler {
   }
 
   // Returns a map, ID -> result
-  public HashMap<Integer, Boolean> computeResults(int numClusters, int numChoices, ArrayList<Agent> agents, HashMap<Integer, Integer> choices) {
+  public HashMap<Integer, Boolean> computeResults(int numClusters, int numChoices, ArrayList<Agent> agents, HashMap<Integer, Integer> choices, boolean[] clusterResults) {
     switch (config.getSubgame()) {
     case CONSENSUS:
-      return consensusGame(numClusters, agents, choices);
+      return consensusGame(numClusters, agents, choices, clusterResults);
     case MAJORITY:
-      return majorityGame(numClusters, numChoices, agents, choices);
+      return majorityGame(numClusters, numChoices, agents, choices, clusterResults);
     default:
       println("No valid subgame selected");
       return new HashMap<Integer, Boolean>();
     }
   }
 
-  private HashMap<Integer, Boolean> consensusGame(int numClusters, ArrayList<Agent> agents, HashMap<Integer, Integer> choices) {
+  private HashMap<Integer, Boolean> consensusGame(int numClusters, ArrayList<Agent> agents, HashMap<Integer, Integer> choices, boolean[] clusterResults) {
     ArrayList<HashSet<Integer>> votes = new ArrayList<HashSet<Integer>>();
 
     for (int cluster = 0; cluster < numClusters; cluster++) {
@@ -41,8 +41,6 @@ public class SubgameHandler {
       int choice = choices.get(agent.getID());
       votes.get(cluster).add(choice);
     }
-
-    boolean[] clusterResults = new boolean[numClusters];
 
     for (int cluster = 0; cluster < numClusters; cluster++) {
       clusterResults[cluster] = votes.get(cluster).size() == 1;
@@ -57,7 +55,7 @@ public class SubgameHandler {
     return result;
   }
 
-  private HashMap<Integer, Boolean> majorityGame(int numClusters, int numChoices, ArrayList<Agent> agents, HashMap<Integer, Integer> choices) {
+  private HashMap<Integer, Boolean> majorityGame(int numClusters, int numChoices, ArrayList<Agent> agents, HashMap<Integer, Integer> choices, boolean[] clusterResults) {
     int[][] votes = new int[numClusters][numChoices];
 
     for (Agent agent : agents) {
@@ -65,8 +63,6 @@ public class SubgameHandler {
       int choice = choices.get(agent.getID()) - 1;
       votes[cluster][choice]++;
     }
-
-    boolean[] clusterResults = new boolean[numClusters];
 
     for (int cluster = 0; cluster < numClusters; cluster++) {
       int numAgents = 0;

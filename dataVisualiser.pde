@@ -1,6 +1,7 @@
 public class VisAndInfoPanel {
   private BarChart clusterSizesChart;
   private BarChart winRateByClusterSizeChart;
+  private BarChart winRateByMonumentProximityChart;
   private XYChart winRateChart;
   private int x, y, innerWidth, innerHeight;
   private PApplet papplet;
@@ -8,6 +9,10 @@ public class VisAndInfoPanel {
   private float[] compressedClusterSizeCounts;
   private float[] winsByClusterSize;
   private float[] compressedWinRateByClusterSize;
+  private float[] monumentProximityCounts;
+  private float[] winsByMonumentProximity;
+  private float[] compressedWinRateByMonumentProximity;
+  private String[] monumentProximityLabels;
   private String[] clusterSizeLabels;
   private ArrayList<PVector> winRatesData;
   private String itemBeingPlaced;
@@ -39,6 +44,9 @@ public class VisAndInfoPanel {
       updateClusterSizesChart();
       updateWinRateChart();
       updateWinRateByClusterSizeChart();
+      if (!config.getLocalisedMonuments() && config.getNumMonuments() > 0) {
+        updateWinRateByMonumentProximityChart();
+      }
     }
   }
 
@@ -116,6 +124,20 @@ public class VisAndInfoPanel {
     winRateByClusterSizeChart.draw(x+10, y+innerHeight/2+10, innerWidth/2-20, innerHeight/2-20);
   }
   
+  private void updateWinRateByMonumentProximityChart() {
+    winRateByMonumentProximityChart.setData(compressedWinRateByMonumentProximity);
+    winRateByMonumentProximityChart.setBarLabels(monumentProximityLabels);
+    winRateByMonumentProximityChart.setBarColour(color(200, 80, 80, 100));
+    winRateByMonumentProximityChart.setBarGap(2);
+    winRateByMonumentProximityChart.showValueAxis(true);
+    winRateByMonumentProximityChart.setValueFormat("#%");
+    winRateByMonumentProximityChart.setValueAxisLabel("Win rate");
+    winRateByMonumentProximityChart.showCategoryAxis(true);
+    winRateByMonumentProximityChart.setCategoryAxisLabel("Monument proximity (distance)");
+    winRateByMonumentProximityChart.setMinValue(0);
+    winRateByMonumentProximityChart.draw(x+innerWidth/2-10, y+innerHeight/2+10, innerWidth/2-20, innerHeight/2-20);
+  }
+  
   public void addWinningClusterSizes(ArrayList<Integer> winningClusterSizes) {
     for (int size : winningClusterSizes) {
       winsByClusterSize[size]++;
@@ -160,6 +182,45 @@ public class VisAndInfoPanel {
       break;
     }
   }
+  
+  public void updateWinRateByMonumentProximity(boolean[] results, float[] distances) {
+    for (int index = 0; index < results.length; index++) {
+      int distance = floor(distances[index]);
+      monumentProximityCounts[distance]++;
+      if (results[index]) {
+        winsByMonumentProximity[distance]++;
+      }
+    }
+    
+    for (int index = monumentProximityCounts.length - 1; index >=0; index--) {
+      if (monumentProximityCounts[index] == 0) {
+        continue;
+      }
+      monumentProximityLabels = new String[index+1];
+      compressedWinRateByMonumentProximity = new float[index+1];
+      for (int j_index = 0; j_index < index + 1; j_index++) {
+        if (index + 1 > 10) {
+          if (j_index % ceil(float(index+1)/10.0) == 0) { // Prevents too many labels -> causes overlapping
+            monumentProximityLabels[j_index] = str(j_index)+" - "+str(j_index+1);
+          } else {
+            monumentProximityLabels[j_index] = "";
+          }
+        } else {
+          if (index < 6 || j_index%2 == 0) {
+            monumentProximityLabels[j_index] = str(j_index)+" - "+str(j_index+1);
+          } else {
+            monumentProximityLabels[j_index] = "";
+          }
+        }
+        if (monumentProximityCounts[j_index] == 0) {
+          compressedWinRateByMonumentProximity[j_index] = 0;
+        } else {
+          compressedWinRateByMonumentProximity[j_index] = winsByMonumentProximity[j_index] / monumentProximityCounts[j_index];
+        }
+      }
+      break;
+    }
+  }
 
   public void setItemBeingPlaced(String itemBeingPlaced) {
     this.itemBeingPlaced = itemBeingPlaced;
@@ -170,15 +231,19 @@ public class VisAndInfoPanel {
   }
 
   public void reset() {
-    compressedClusterSizeCounts = new float[]{};
+    compressedClusterSizeCounts = new float[]{}; //remove?
     clusterSizeCounts = new float[config.getNumAgents()+1];
-    compressedWinRateByClusterSize = new float[]{};
+    compressedWinRateByClusterSize = new float[]{}; //remove?
     winsByClusterSize = new float[config.getNumAgents()+1];
+    monumentProximityCounts = new float[ceil(config.getGridSize()*sqrt(2))];
+    winsByMonumentProximity = new float[ceil(config.getGridSize()*sqrt(2))];
+    compressedWinRateByMonumentProximity = new float[]{}; //remove?
     Arrays.fill(clusterSizeCounts, 0);
-    clusterSizeLabels = new String[]{};
+    clusterSizeLabels = new String[]{}; //remove?
     winRatesData = new ArrayList<PVector>();
     clusterSizesChart = new BarChart(papplet);
     winRateByClusterSizeChart = new BarChart(papplet);
+    winRateByMonumentProximityChart = new BarChart(papplet);
     winRateChart = new XYChart(papplet);
   }
 }

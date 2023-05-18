@@ -1,35 +1,39 @@
-public class GridPosition implements Comparable<GridPosition> {
-  private int x;
-  private int y;
+public class FractionalGridPosition implements Comparable<FractionalGridPosition> {
+  private float x;
+  private float y;
 
-  GridPosition(int xCoord, int yCoord) {
+  FractionalGridPosition(float xCoord, float yCoord) {
     setPosition(xCoord, yCoord);
   }
+  
+  FractionalGridPosition(GridPosition position) {
+    setPosition(position.getX(), position.getY());
+  }
 
-  public void setPosition(int xCoord, int yCoord) {
+  public void setPosition(float xCoord, float yCoord) {
     setX(xCoord);
     setY(yCoord);
   }
 
-  public void setX(int xCoord) {
+  public void setX(float xCoord) {
     x = clamp(0, config.getGridSize(), xCoord);
   }
 
-  public void setY(int yCoord) {
+  public void setY(float yCoord) {
     y = clamp(0, config.getGridSize(), yCoord);
   }
 
-  public int getX() {
+  public float getX() {
     return x;
   }
 
-  public int getY() {
+  public float getY() {
     return y;
   }
 
   public float distanceTo(GridPosition position) {
-    int diffX = abs(this.x - position.getX());
-    int diffY = abs(this.y - position.getY());
+    float diffX = abs(this.x - position.getX());
+    float diffY = abs(this.y - position.getY());
 
     return sqrt(diffX*diffX + diffY*diffY);
   }
@@ -42,7 +46,7 @@ public class GridPosition implements Comparable<GridPosition> {
   }
 
   @Override
-  public int compareTo(GridPosition position) {
+  public int compareTo(FractionalGridPosition position) {
     if (position.getY() == this.y) {
       if (position.getX() == this.x) {
         return 0;
