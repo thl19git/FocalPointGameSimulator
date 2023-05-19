@@ -229,6 +229,10 @@ public class VisAndInfoPanel {
   public void setErrorText(String errorText) {
     this.errorText = errorText;
   }
+  
+  public void logFinalStatistics(DataLogger dataLogger) {
+    dataLogger.logFinalStatistics(clusterSizeCounts, winsByClusterSize, monumentProximityCounts, winsByMonumentProximity, winRatesData);
+  }
 
   public void reset() {
     compressedClusterSizeCounts = new float[]{}; //remove?

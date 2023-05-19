@@ -609,6 +609,7 @@ public class Server {
 
   private void finishStage() {
     if (!savedJSON) {
+      visInfoPanel.logFinalStatistics(dataLogger);
       dataLogger.saveJSON();
       savedJSON = true;
     }

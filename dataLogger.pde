@@ -75,6 +75,61 @@ public class DataLogger {
     
     return winningSizes;
   }
+  
+  private void logClusterSizeCountsWins(float[] clusterSizeCounts, float[] winsByClusterSize) {
+    for (int index = clusterSizeCounts.length - 1; index >= 0; index--) {
+      if (clusterSizeCounts[index] == 0) {
+        continue;
+      }
+      
+      JSONArray clusterCounts = new JSONArray();
+      for (int j_index = 0; j_index <= index; j_index++) {
+        JSONObject clusterCountObject = new JSONObject();
+        clusterCountObject.setInt("size", j_index);
+        clusterCountObject.setInt("frequency", (int)clusterSizeCounts[j_index]);
+        clusterCountObject.setInt("wins", (int)winsByClusterSize[j_index]);
+        clusterCounts.setJSONObject(j_index, clusterCountObject);
+      }
+      data.setJSONArray("clusterCounts", clusterCounts);
+      break;
+    }
+  }
+  
+  private void logMonumentProximityCountsWins(float[] monumentProximityCounts, float[] winsByMonumentProximity) {
+    for (int index = monumentProximityCounts.length - 1; index >= 0; index--) {
+      if (monumentProximityCounts[index] == 0) {
+        continue;
+      }
+      
+      JSONArray proximityCounts = new JSONArray();
+      for (int j_index = 0; j_index <= index; j_index++) {
+        JSONObject proximityCountObject = new JSONObject();
+        proximityCountObject.setString("distance", str(j_index)+" - "+str(j_index+1));
+        proximityCountObject.setInt("frequency", (int)monumentProximityCounts[j_index]);
+        proximityCountObject.setInt("wins", (int)winsByMonumentProximity[j_index]);
+        proximityCounts.setJSONObject(j_index, proximityCountObject);
+      }
+      data.setJSONArray("monumentProximityCounts", proximityCounts);
+      break;
+    }
+  }
+  
+  private void logWinRates(ArrayList<PVector> winRatesData) {
+    JSONArray winRates = new JSONArray();
+    for (int index = 0; index < winRatesData.size(); index++) {
+      JSONObject winRateObject = new JSONObject();
+      winRateObject.setInt("round", index+1);
+      winRateObject.setFloat("winRate", winRatesData.get(index).y);
+      winRates.setJSONObject(index, winRateObject);
+    }
+    data.setJSONArray("winRates", winRates);
+  }
+  
+  public void logFinalStatistics(float[] clusterSizeCounts, float[] winsByClusterSize, float[] monumentProximityCounts, float[] winsByMonumentProximity, ArrayList<PVector> winRatesData) {
+    logClusterSizeCountsWins(clusterSizeCounts, winsByClusterSize);
+    logMonumentProximityCountsWins(monumentProximityCounts, winsByMonumentProximity);
+    logWinRates(winRatesData);
+  }
 
   public void saveJSON() {
     data.setJSONArray("rounds", rounds);
