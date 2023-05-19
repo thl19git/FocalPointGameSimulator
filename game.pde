@@ -8,31 +8,11 @@ public class Game extends GViewListener {
 
     drawGrid(graphicsHandle);
 
-    if (server.getStage() == GameStage.CONFIGURATION) {
-      graphicsHandle.endDraw();
-      validate();
-      return; // Other things have not been initialised
-    }
-
-    drawMonuments(graphicsHandle);
-
-    if (server.getStage() == GameStage.PLACING) {
-      drawDistricts(graphicsHandle, true);
-      drawStaticAgents(graphicsHandle, false);
-      if (placementStage == PlacementStage.DISTRICTS) {
-        drawSelectedSquare(graphicsHandle);
-      }
-      graphicsHandle.endDraw();
-      validate();
-      return; // Other things have not been initialised
-    }
-
-    drawDistricts(graphicsHandle, false);
-
     switch (server.getStage()) {
     case CONFIGURATION:
       break;
     case PLACING:
+      drawPlacingStage(graphicsHandle);
       break;
     case MOVE_DECISION:
       drawMoveDecisionStage(graphicsHandle);
@@ -46,28 +26,62 @@ public class Game extends GViewListener {
     case VOTING:
       drawVotingStage(graphicsHandle);
       break;
+    case MONUMENT_MOVE_DECISION:
+      drawMonumentMoveDecisionStage(graphicsHandle);
+      break;
+    case MONUMENTS_MOVING:
+      drawMonumentsMovingStage(graphicsHandle);
+      break;
     default:
       println("Update called, stage: ", server.getStage());
     }
 
     graphicsHandle.endDraw();
-
     validate();
+  }
+  
+  private void drawPlacingStage(PGraphics graphicsHandle) {
+    drawDistricts(graphicsHandle, true);
+    drawMonuments(graphicsHandle);
+    drawStaticAgents(graphicsHandle, false);
+    if (placementStage == PlacementStage.DISTRICTS) {
+      drawSelectedSquare(graphicsHandle);
+    }
   }
 
   private void drawVotingStage(PGraphics graphicsHandle) {
+    drawDistricts(graphicsHandle, false);
+    drawMonuments(graphicsHandle);
     drawStaticAgents(graphicsHandle, true);
   }
 
   private void drawClusteringStage(PGraphics graphicsHandle) {
+    drawDistricts(graphicsHandle, false);
+    drawMonuments(graphicsHandle);
     drawStaticAgents(graphicsHandle, false);
   }
 
   private void drawAgentsMovingStage(PGraphics graphicsHandle) {
+    drawDistricts(graphicsHandle, false);
+    drawMonuments(graphicsHandle);
     drawMovingAgents(graphicsHandle);
   }
 
   private void drawMoveDecisionStage(PGraphics graphicsHandle) {
+    drawDistricts(graphicsHandle, false);
+    drawMonuments(graphicsHandle);
+    drawStaticAgents(graphicsHandle, false);
+  }
+  
+  private void drawMonumentMoveDecisionStage(PGraphics graphicsHandle) {
+    drawDistricts(graphicsHandle, false);
+    drawMonuments(graphicsHandle);
+    drawStaticAgents(graphicsHandle, false);
+  }
+  
+  private void drawMonumentsMovingStage(PGraphics graphicsHandle) {
+    drawDistricts(graphicsHandle, false);
+    drawMovingMonuments(graphicsHandle);
     drawStaticAgents(graphicsHandle, false);
   }
 
@@ -91,11 +105,8 @@ public class Game extends GViewListener {
       graphicsHandle.line(0, position, width(), position);
     }
   }
-
-  private void drawMonument(PGraphics graphicsHandle, Monument monument) {
-    GridPosition position = monument.getPosition();
-    float xCoord = position.getX();
-    float yCoord = position.getY();
+  
+  private void drawMonumentQuad(PGraphics graphicsHandle, float xCoord, float yCoord, String text) {
     float gap = float(width()) / float(config.getGridSize());
     graphicsHandle.stroke(color(0, 0, 0));
     graphicsHandle.strokeWeight(3);
@@ -104,13 +115,41 @@ public class Game extends GViewListener {
     graphicsHandle.textAlign(CENTER, CENTER);
     graphicsHandle.fill(255);
     graphicsHandle.textSize(20);
-    graphicsHandle.text(monument.getText(), gap * (xCoord + 0.5), gap * (yCoord + 0.5));
+    graphicsHandle.text(text, gap * (xCoord + 0.5), gap * (yCoord + 0.5));
+  }
+
+  private void drawMonument(PGraphics graphicsHandle, Monument monument) {
+    GridPosition position = monument.getPosition();
+    float xCoord = position.getX();
+    float yCoord = position.getY();
+    drawMonumentQuad(graphicsHandle, xCoord, yCoord, monument.getText());
+  }
+  
+  private void drawMovingMonument(PGraphics graphicsHandle, Monument monument) {
+    GridPosition position = monument.getPosition();
+    GridPosition nextPosition = monument.getNextPosition();
+    float xCoord = position.getX();
+    float yCoord = position.getY();
+    float nextXCoord = nextPosition.getX();
+    float nextYCoord = nextPosition.getY();
+    float diffX = nextXCoord - xCoord;
+    float diffY = nextYCoord - yCoord;
+    xCoord += (1 + MOVE_FRAMES - server.getFramesToMove()) * diffX / MOVE_FRAMES;
+    yCoord += (1 + MOVE_FRAMES - server.getFramesToMove()) * diffY / MOVE_FRAMES;
+    drawMonumentQuad(graphicsHandle, xCoord, yCoord, monument.getText());
   }
 
   private void drawMonuments(PGraphics graphicsHandle) {
     ArrayList<Monument> monuments = server.getMonuments();
     for (Monument monument : monuments) {
       drawMonument(graphicsHandle, monument);
+    }
+  }
+  
+  private void drawMovingMonuments(PGraphics graphicsHandle) {
+    ArrayList<Monument> monuments = server.getMonuments();
+    for (Monument monument : monuments) {
+      drawMovingMonument(graphicsHandle, monument);
     }
   }
 
@@ -295,7 +334,7 @@ public class Game extends GViewListener {
   }
 
   private float calculateMovingPosition(float position, float nextPosition) {
-    return position + (1 + AGENT_MOVE_FRAMES - server.getFramesToMove()) * (nextPosition - position) / AGENT_MOVE_FRAMES;
+    return position + (1 + MOVE_FRAMES - server.getFramesToMove()) * (nextPosition - position) / MOVE_FRAMES;
   }
 
   private void drawAgent(PGraphics graphicsHandle, float xPosition, float yPosition, float size, color agentColor, color outlineColor) {

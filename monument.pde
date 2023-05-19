@@ -1,11 +1,13 @@
 public class Monument {
   private GridPosition position;
+  private GridPosition nextPosition;
   private String text;
   private int district;
   public final float viewDistance;
 
   Monument(GridPosition position, String text, float viewDistance) {
     setPosition(position);
+    setNextPosition(position);
     setText(text);
     this.viewDistance = viewDistance;
     district = 0;
@@ -17,6 +19,18 @@ public class Monument {
 
   public void setPosition(GridPosition position) {
     this.position = position;
+  }
+  
+  public GridPosition getNextPosition() {
+    return nextPosition;
+  }
+  
+  public void setNextPosition(GridPosition nextPosition) {
+    this.nextPosition = nextPosition;
+  }
+  
+  public void reachedNextGridPosition() {
+    position = nextPosition;
   }
 
   public String getText() {
@@ -33,6 +47,10 @@ public class Monument {
 
   public void setDistrict(int district) {
     this.district = district;
+  }
+  
+  public int chooseNextGridPosition(final ArrayList<GridPosition> validPositions) {
+    return floor(random(validPositions.size()));
   }
 
   public boolean canBeSeen(GridPosition position) {

@@ -107,7 +107,7 @@ public class Server {
   }
 
   private void resetCounters() {
-    framesToMove = AGENT_MOVE_FRAMES;
+    framesToMove = MOVE_FRAMES;
     framesForClustering = SHOW_CLUSTERING_FRAMES;
     framesForVotes = SHOW_VOTES_FRAMES;
     movementRounds = config.getNumMoves();
@@ -460,15 +460,32 @@ public class Server {
     }
     return agentsPerCluster;
   }
+  
+  private ArrayList<GridPosition> getValidMonumentPositions(GridPosition position, Set<GridPosition> occupiedPositions) {
+    ArrayList<GridPosition> validPositions = new ArrayList<GridPosition>();
+    validPositions.add(position); //Current position is valid
+
+    int x = position.getX();
+    int y = position.getY();
+
+    if (x > 0 && !occupiedPositions.contains(new GridPosition(x-1, y))) {
+      validPositions.add(new GridPosition(x-1, y));
+    }
+    if (x < config.getGridSize() - 1 && !occupiedPositions.contains(new GridPosition(x+1, y))) {
+      validPositions.add(new GridPosition(x+1, y));
+    }
+    if (y > 0 && !occupiedPositions.contains(new GridPosition(x, y-1))) {
+      validPositions.add(new GridPosition(x, y-1));
+    }
+    if (y < config.getGridSize() - 1 && !occupiedPositions.contains(new GridPosition(x, y+1))) {
+      validPositions.add(new GridPosition(x, y+1));
+    }
+    return validPositions;
+  }
 
   private void startStage() {
-    if (roundsRemaining > 0) {
-      roundsRemaining--;
-      stage = GameStage.MOVE_DECISION;
-    } else {
-      //printOverallStats();
-      stage = GameStage.FINISH;
-    }
+    roundsRemaining--;
+    stage = GameStage.MOVE_DECISION;
   }
 
   private void moveDecisionStage() {
@@ -497,7 +514,7 @@ public class Server {
       for (Agent agent : agents) {
         agent.reachedNextGridPosition();
       }
-      framesToMove = AGENT_MOVE_FRAMES;
+      framesToMove = MOVE_FRAMES;
       stage = GameStage.COMMUNICATION;
       return;
     }
@@ -545,9 +562,49 @@ public class Server {
     }
     framesForVotes--;
     if (framesForVotes == 0) {
-      stage = GameStage.START;
       framesForVotes = SHOW_VOTES_FRAMES;
+      if (roundsRemaining > 0) {
+        stage = GameStage.MONUMENT_MOVE_DECISION;
+      } else {
+        stage = GameStage.FINISH;
+      }
     }
+  }
+  
+  private void monumentMoveDecisionStage() {
+    HashSet<GridPosition> occupiedPositions = new HashSet<GridPosition>();
+    for (GridPosition position : monuments.keySet()) {
+      occupiedPositions.add(position.clone());
+    }
+    ArrayList<Monument> updatedMonuments = new ArrayList<Monument>();
+    for (Monument monument : monuments.values()) {
+      GridPosition currentPosition = monument.getPosition();
+      ArrayList<GridPosition> validPositions = getValidMonumentPositions(currentPosition, occupiedPositions);
+      int positionIndex = monument.chooseNextGridPosition(validPositions);
+      GridPosition nextPosition = validPositions.get(positionIndex);
+      occupiedPositions.remove(currentPosition);
+      occupiedPositions.add(nextPosition);
+      monument.setNextPosition(nextPosition);
+      updatedMonuments.add(monument);
+    }
+    monuments.clear();
+    for (Monument monument : updatedMonuments) {
+      monuments.put(monument.getPosition(), monument);
+    }
+    stage = GameStage.MONUMENTS_MOVING;
+  }
+  
+  private void monumentsMovingStage() {
+    framesToMove--;
+    if (framesToMove == 0) {
+      for (Monument monument : monuments.values()) {
+        monument.reachedNextGridPosition();
+      }
+      framesToMove = MOVE_FRAMES;
+      stage = GameStage.START;
+      return;
+    }
+    game.update();
   }
 
   private void finishStage() {
@@ -586,6 +643,12 @@ public class Server {
       break;
     case VOTING:
       votingStage();
+      break;
+    case MONUMENT_MOVE_DECISION:
+      monumentMoveDecisionStage();
+      break;
+    case MONUMENTS_MOVING:
+      monumentsMovingStage();
       break;
     case FINISH:
       finishStage();

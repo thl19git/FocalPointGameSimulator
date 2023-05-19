@@ -3,13 +3,14 @@ import org.gicentre.utils.stat.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Arrays;
 import java.awt.Font;
 import java.util.Objects;
 
 final int START_ID = 1000;
 final float AGENT_WIDTH = 0.6;
-final int AGENT_MOVE_FRAMES = 30;
+final int MOVE_FRAMES = 30;
 final int SHOW_CLUSTERING_FRAMES = 10;
 final int SHOW_VOTES_FRAMES = 60;
 final color[] INITIAL_AGENT_COLORS = {color(128, 0, 128), color(128, 128, 0), color(0, 128, 128), color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)};

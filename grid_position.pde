@@ -57,6 +57,10 @@ public class GridPosition implements Comparable<GridPosition> {
       return 1;
     }
   }
+  
+  public GridPosition clone() {
+    return new GridPosition(x, y);
+  }
 
   @Override
   public boolean equals(Object o) {
