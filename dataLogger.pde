@@ -125,9 +125,11 @@ public class DataLogger {
     data.setJSONArray("winRates", winRates);
   }
   
-  public void logFinalStatistics(float[] clusterSizeCounts, float[] winsByClusterSize, float[] monumentProximityCounts, float[] winsByMonumentProximity, ArrayList<PVector> winRatesData) {
+  public void logFinalStatistics(float[] clusterSizeCounts, float[] winsByClusterSize, float[] monumentProximityCounts, float[] winsByMonumentProximity, ArrayList<PVector> winRatesData, Config conf) {
     logClusterSizeCountsWins(clusterSizeCounts, winsByClusterSize);
-    logMonumentProximityCountsWins(monumentProximityCounts, winsByMonumentProximity);
+    if (conf.getNumMonuments() > 0 && !conf.getLocalisedMonuments()) {
+      logMonumentProximityCountsWins(monumentProximityCounts, winsByMonumentProximity);
+    }
     logWinRates(winRatesData);
   }
 

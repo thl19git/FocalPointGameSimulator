@@ -231,7 +231,7 @@ public class VisAndInfoPanel {
   }
   
   public void logFinalStatistics(DataLogger dataLogger) {
-    dataLogger.logFinalStatistics(clusterSizeCounts, winsByClusterSize, monumentProximityCounts, winsByMonumentProximity, winRatesData);
+    dataLogger.logFinalStatistics(clusterSizeCounts, winsByClusterSize, monumentProximityCounts, winsByMonumentProximity, winRatesData, config);
   }
 
   public void reset() {

@@ -366,7 +366,7 @@ public class Server {
     handleMonumentEditing(); //Agents can update monuments after receiving game results
     ArrayList<Integer> winningClusterSizes = dataLogger.logRound(agents, votes, voteResults, numClusters);
     visInfoPanel.addWinningClusterSizes(winningClusterSizes);
-    if (!config.getLocalisedMonuments()) {
+    if (!config.getLocalisedMonuments() && config.getNumMonuments() > 0) {
       visInfoPanel.updateWinRateByMonumentProximity(clusterResults, clusterDistancesToMonuments);
     }
   }
@@ -564,7 +564,11 @@ public class Server {
     if (framesForVotes == 0) {
       framesForVotes = SHOW_VOTES_FRAMES;
       if (roundsRemaining > 0) {
-        stage = GameStage.MONUMENT_MOVE_DECISION;
+        if (config.getNumMonuments() > 0) {
+          stage = GameStage.MONUMENT_MOVE_DECISION;
+        } else {
+          stage = GameStage.START;
+        }
       } else {
         stage = GameStage.FINISH;
       }
