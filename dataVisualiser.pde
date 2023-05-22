@@ -5,6 +5,7 @@ public class VisAndInfoPanel {
   private XYChart winRateChart;
   private int x, y, innerWidth, innerHeight;
   private PApplet papplet;
+  private int[] thisRoundAgentsPerCluster;
   private float[] clusterSizeCounts;
   private float[] compressedClusterSizeCounts;
   private float[] winsByClusterSize;
@@ -158,6 +159,7 @@ public class VisAndInfoPanel {
   }
 
   public void updateClusterCounts(int[] agentsPerCluster) {
+    thisRoundAgentsPerCluster = agentsPerCluster;
     for (int index = 0; index < agentsPerCluster.length; index++) {
       clusterSizeCounts[agentsPerCluster[index]]++;
     }
@@ -186,9 +188,11 @@ public class VisAndInfoPanel {
   public void updateWinRateByMonumentProximity(boolean[] results, float[] distances) {
     for (int index = 0; index < results.length; index++) {
       int distance = floor(distances[index]);
-      monumentProximityCounts[distance]++;
-      if (results[index]) {
-        winsByMonumentProximity[distance]++;
+      if (thisRoundAgentsPerCluster[index] > 0) {
+        monumentProximityCounts[distance]++;
+        if (results[index]) {
+          winsByMonumentProximity[distance]++;
+        }
       }
     }
     
