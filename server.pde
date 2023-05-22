@@ -102,6 +102,7 @@ public class Server {
     assignDistricts();
     dataLogger.init();
     dataLogger.logConfig(config);
+    resetCounters();
     savedJSON = false;
     stage = GameStage.START;
   }
@@ -131,8 +132,9 @@ public class Server {
     }
     incrementGridOccupancy(position);
     int positionInBox = gridOccupancyAtPosition(position);
-    //Agent agent = new Agent(nextAgentID++, position, positionInBox);
-    Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
+    //Agent agent = new Agent(nextAgentID++, position, positionInBox);    
+    Agent agent = new MonumentViewingAgent(nextAgentID++, position, positionInBox);  
+    //Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
     //Agent agent = new HomelyAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
     agents.add(agent);
     return true;
@@ -150,7 +152,7 @@ public class Server {
     if (monuments.containsKey(position) || monuments.size() == config.getNumMonuments()) {
       return false;
     }
-    Monument monument = new Monument(position, "Hi", config.getMonumentVisibility());
+    Monument monument = new Monument(position, "", config.getMonumentVisibility());
     monuments.put(position, monument);
     return true;
   }

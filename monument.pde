@@ -50,7 +50,8 @@ public class Monument {
   }
   
   public int chooseNextGridPosition(final ArrayList<GridPosition> validPositions) {
-    return floor(random(validPositions.size()));
+    //return floor(random(validPositions.size()));
+    return 0;
   }
 
   public boolean canBeSeen(GridPosition position) {

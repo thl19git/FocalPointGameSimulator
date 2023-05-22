@@ -95,9 +95,7 @@ public class Agent {
   }
 
   public void receiveVoteResult(boolean result) {
-    if (result == true) {
-      println(ID, " - winner!");
-    }
+    // Do something
   }
 
   public void viewMonuments(ArrayList<Monument> monuments) {
@@ -105,14 +103,7 @@ public class Agent {
   }
 
   public void editMonument(Monument monument) {
-    if ((ceil(random(10))) == 10) { //10% chance of updating a monument
-      if (monument.getText().equals("Hi")) {
-        monument.setText("Lo");
-      } else {
-        monument.setText("Hi");
-      }
-      println("Updated a monument!");
-    }
+    // Do something
   }
 
   public Agent clone() {
