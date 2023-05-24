@@ -49,6 +49,7 @@ public int[] updateCentroidsAndClusters(int clusters, ArrayList<Agent> agents, F
       centroids[index] = new FractionalGridPosition(xPosition, yPosition);
     }
   }
+  server.setCentroidPositions(centroids);
   sortColors(centroids); // Reduces amount of color switching (not perfect but better than nothing)
   return agentsPerCluster;
 }

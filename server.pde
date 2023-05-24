@@ -7,6 +7,7 @@ public class Server {
   private HashMap<GridPosition, Monument> monuments;
   private ArrayList<District> districts;
   private HashMap<GridPosition, Integer> districtAtPosition;
+  private FractionalGridPosition[] centroidPositions;
   private float[] clusterDistancesToMonuments;
   private int[] originalGridOccupancy;
   private int[] gridOccupancy;
@@ -438,6 +439,10 @@ public class Server {
       clusterDistancesToMonuments[index] = shortestDistance;
     }
   }
+  
+  private void setCentroidPositions(FractionalGridPosition[] centroidPositions) {
+    this.centroidPositions = centroidPositions;
+  }
 
   private ArrayList<Integer> districtsOfPositions(ArrayList<GridPosition> positions) {
     ArrayList<Integer> districtsArray = new ArrayList<Integer>();
@@ -544,8 +549,12 @@ public class Server {
         agentsPerCluster = kMeansClustering(config.getNumClusters(), agents);
       }
       if (config.getNumMonuments() > 0 && !config.getLocalisedMonuments()) {
-        FractionalGridPosition[] means = calculateClusterMeans(agentsPerCluster);
-        findNearestMonuments(means);
+        if (config.getDistrictClusters()) {
+          FractionalGridPosition[] means = calculateClusterMeans(agentsPerCluster);
+          findNearestMonuments(means);
+        } else {
+          findNearestMonuments(centroidPositions);
+        }
       }
       visInfoPanel.updateClusterCounts(agentsPerCluster);
       game.update();
