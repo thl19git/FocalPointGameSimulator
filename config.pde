@@ -40,7 +40,7 @@ public class Config {
   }
 
   public void setGridSize(int gridSize) {
-    this.gridSize = max(3, gridSize);
+    this.gridSize = clamp(3, 20, gridSize);
   }
 
   public int getNumRounds() {
@@ -104,7 +104,7 @@ public class Config {
   }
 
   public void setMonumentVisibility(float monumentVisibility) {
-    float maxVisibility = float(this.gridSize) * sqrt(2);
+    float maxVisibility = (float(this.gridSize) - 1) * sqrt(2);
     this.monumentVisibility = clamp(0, monumentVisibility, maxVisibility);
   }
   

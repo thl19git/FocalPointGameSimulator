@@ -1,8 +1,8 @@
 public class Monument {
-  private GridPosition position;
+  protected GridPosition position;
   private GridPosition nextPosition;
-  private String text;
-  private int district;
+  protected String text;
+  protected int district;
   public final float viewDistance;
 
   Monument(GridPosition position, String text, float viewDistance) {

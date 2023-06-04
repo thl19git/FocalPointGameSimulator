@@ -42,4 +42,9 @@ public class SmarterAgent extends Agent {
     int choice = ceil(random(numChoices));
     return choice;
   }
+  
+  @Override
+  public Agent clone() {
+    return new SmarterAgent(ID, gridPosition, positionInBox);
+  }
 }

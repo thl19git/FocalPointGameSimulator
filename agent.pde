@@ -4,7 +4,7 @@ public class Agent {
   protected int homeDistrict;
   protected int currentDistrict;
   private GridPosition nextGridPosition;
-  private int positionInBox;
+  protected int positionInBox;
   private int nextPositionInBox;
   protected int clusterNumber;
 
@@ -103,6 +103,15 @@ public class Agent {
   }
 
   public void editMonument(Monument monument) {
+    // Do something
+  }
+  
+  // Note that otherAgents will also contain a reference to the agent itself
+  public void communicate(ArrayList<Agent> otherAgents) {
+    // Do something
+  }
+  
+  public void receiveMessage(Agent sender, String message) {
     // Do something
   }
 

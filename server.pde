@@ -134,9 +134,12 @@ public class Server {
     incrementGridOccupancy(position);
     int positionInBox = gridOccupancyAtPosition(position);
     //Agent agent = new Agent(nextAgentID++, position, positionInBox);    
-    Agent agent = new MonumentViewingAgent(nextAgentID++, position, positionInBox);  
+    //Agent agent = new MonumentViewingAgent(nextAgentID++, position, positionInBox);  
+    //Agent agent = new MonumentEditingAgent(nextAgentID++, position, positionInBox);
     //Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
     //Agent agent = new HomelyAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
+    Agent agent = new TalkativeAgent(nextAgentID++, position, positionInBox);
+    //Agent agent = new RememberingAgent(nextAgentID++, position, positionInBox);
     agents.add(agent);
     return true;
   }
@@ -153,7 +156,8 @@ public class Server {
     if (monuments.containsKey(position) || monuments.size() == config.getNumMonuments()) {
       return false;
     }
-    Monument monument = new Monument(position, "", config.getMonumentVisibility());
+    //Monument monument = new Monument(position, "", config.getMonumentVisibility());
+    Monument monument = new CirclingMonument(position, "", config.getMonumentVisibility());
     monuments.put(position, monument);
     return true;
   }
@@ -489,6 +493,28 @@ public class Server {
     }
     return validPositions;
   }
+  
+  private void handleCommunicating() {
+    HashMap<GridPosition, ArrayList<Agent>> agentGroups = new HashMap<GridPosition, ArrayList<Agent>>();
+    for (Agent agent : agents) {
+      GridPosition position = agent.getGridPosition();
+      if (agentGroups.containsKey(position)) {
+        ArrayList<Agent> agentList = agentGroups.get(position);
+        agentList.add(agent);
+      } else {
+        ArrayList<Agent> agentList = new ArrayList<Agent>();
+        agentList.add(agent);
+        agentGroups.put(position, agentList);
+      }
+    }
+    for (Agent agent : agents) {
+      GridPosition position = agent.getGridPosition();
+      ArrayList<Agent> agentList = agentGroups.get(position);
+      if (agentList.size() > 1) {
+        agent.communicate(agentList);
+      }
+    }
+  }
 
   private void startStage() {
     roundsRemaining--;
@@ -538,6 +564,7 @@ public class Server {
       handleMonumentEditing();
       stage = GameStage.MOVE_DECISION;
     }
+    handleCommunicating();
   }
 
   private void clusteringStage() {

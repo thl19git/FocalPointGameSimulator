@@ -1,27 +1,24 @@
-public class MonumentViewingAgent extends Agent {
+public class MonumentEditingAgent extends Agent {
   private String mostRecentTextSeen;
   private boolean mostRecentResult;
   private String mostRecentChoice;
-  private String mostRecentEvent;
 
-  MonumentViewingAgent(int ID, GridPosition gridPosition, int positionInBox) {
+  MonumentEditingAgent(int ID, GridPosition gridPosition, int positionInBox) {
     super(ID, gridPosition, positionInBox);
 
     mostRecentTextSeen = "";
     mostRecentResult = false;
     mostRecentChoice = "";
-    mostRecentEvent = "result";
   }
 
   @Override
   public void receiveVoteResult(boolean result) {
     mostRecentResult = result;
-    mostRecentEvent = "result";
   }
   
   @Override
   public void editMonument(Monument monument) {
-    if (mostRecentEvent.equals("result") && mostRecentResult && (mostRecentChoice.equals("Hi") || mostRecentChoice.equals("Lo"))) {
+    if (mostRecentResult && (mostRecentChoice.equals("Hi") || mostRecentChoice.equals("Lo"))) {
       monument.setText(mostRecentChoice);
     } else if (!mostRecentTextSeen.equals("")) {
       monument.setText(mostRecentTextSeen);
@@ -47,7 +44,6 @@ public class MonumentViewingAgent extends Agent {
       if (distance < closestDistance && !monument.getText().equals("")) {
         closestDistance = distance;
         monumentText = monument.getText();
-        mostRecentEvent = "view";
       }
     }
     mostRecentTextSeen = String.valueOf(monumentText);
@@ -57,7 +53,7 @@ public class MonumentViewingAgent extends Agent {
   public int voteForChoice(int numChoices, ArrayList<Monument> visibleMonuments) {
     viewMonuments(visibleMonuments);
 
-    if (mostRecentEvent.equals("result") && mostRecentResult && (mostRecentChoice.equals("Hi") || mostRecentChoice.equals("Lo"))) {
+    if (mostRecentResult && (mostRecentChoice.equals("Hi") || mostRecentChoice.equals("Lo"))) {
       if (mostRecentChoice.equals("Hi")) {
         return numChoices;
       } else {
@@ -80,6 +76,6 @@ public class MonumentViewingAgent extends Agent {
   
   @Override
   public Agent clone() {
-    return new MonumentViewingAgent(ID, gridPosition, positionInBox);
+    return new MonumentEditingAgent(ID, gridPosition, positionInBox);
   }
 }
