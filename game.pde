@@ -1,4 +1,4 @@
-public class Game extends GViewListener {
+public class GameGraphics extends GViewListener {
   private int sX, sY, eX, eY;
 
   public void update() {

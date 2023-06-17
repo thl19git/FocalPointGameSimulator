@@ -3,6 +3,7 @@ import org.gicentre.utils.stat.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Arrays;
 import java.awt.Font;
@@ -17,12 +18,15 @@ final color[] INITIAL_AGENT_COLORS = {color(128, 0, 128), color(128, 128, 0), co
 final color BLACK = color(0, 0, 0);
 final color WIN_COLOR = color(0, 255, 0);
 final color LOSE_COLOR = color(255, 0, 0);
-final String[] SUBGAMES = {"CONSENSUS", "MAJORITY"};
+final String[] SUBGAMES = {"CONSENSUS", "MAJORITY"}; //Add string here for new subgame
 color[] agentColors;
+
+// Only for agents with social networks
+final int MAX_NETWORK_SIZE = 100;
 
 
 GView gameView;
-Game game;
+GameGraphics gameGraphics;
 VisAndInfoPanel visInfoPanel;
 Config config;
 Server server;
@@ -101,8 +105,8 @@ void setup() {
   server = new Server();
 
   gameView = new GView(this, width/15, 7*height/27, 2*width/5, 2*width/5, P2D);
-  game = new Game();
-  gameView.addListener(game);
+  gameGraphics = new GameGraphics();
+  gameView.addListener(gameGraphics);
 
   visInfoPanel.setItemBeingPlaced("Districts");
 

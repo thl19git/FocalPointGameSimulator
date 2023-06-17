@@ -22,6 +22,7 @@ public class SubgameHandler {
       return consensusGame(numClusters, agents, choices, clusterResults);
     case MAJORITY:
       return majorityGame(numClusters, numChoices, agents, choices, clusterResults);
+    //Add new case here for new subgame
     default:
       println("No valid subgame selected");
       return new HashMap<Integer, Boolean>();

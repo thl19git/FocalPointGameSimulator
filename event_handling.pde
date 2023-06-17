@@ -78,7 +78,7 @@ public void handleResetButton(GButton button, GEvent event) {
     // If there are placed objects, remove them
     if (server.containsPlacedObjects()) {
       server.removePlacedObjects();
-      game.update(); //try without
+      gameGraphics.update(); //try without
     } else {
       // Go to configuration stage
       playButton.setText("Configure");
@@ -86,7 +86,7 @@ public void handleResetButton(GButton button, GEvent event) {
       enableDisableFields(true);
       placementButton.setEnabled(false);
       placementButton.setVisible(false);
-      game.update();
+      gameGraphics.update();
     }
   } else if (playButton.getText() == "Configure") {
     return;
@@ -96,7 +96,7 @@ public void handleResetButton(GButton button, GEvent event) {
     server.startPlacingStage();
     placementButton.setEnabled(true);
     placementButton.setVisible(true);
-    game.update();
+    gameGraphics.update();
   }
 }
 

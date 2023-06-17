@@ -13,39 +13,39 @@ public class Monument {
     district = 0;
   }
 
-  public GridPosition getPosition() {
+  public final GridPosition getPosition() {
     return position;
   }
 
-  public void setPosition(GridPosition position) {
+  public final void setPosition(GridPosition position) {
     this.position = position;
   }
   
-  public GridPosition getNextPosition() {
+  public final GridPosition getNextPosition() {
     return nextPosition;
   }
   
-  public void setNextPosition(GridPosition nextPosition) {
+  public final void setNextPosition(GridPosition nextPosition) {
     this.nextPosition = nextPosition;
   }
   
-  public void reachedNextGridPosition() {
+  public final void reachedNextGridPosition() {
     position = nextPosition;
   }
 
-  public String getText() {
+  public final String getText() {
     return text;
   }
 
-  public void setText(String text) {
+  public final void setText(String text) {
     this.text = text;
   }
 
-  public int getDistrict() {
+  public final int getDistrict() {
     return district;
   }
 
-  public void setDistrict(int district) {
+  public final void setDistrict(int district) {
     this.district = district;
   }
   
@@ -54,7 +54,7 @@ public class Monument {
     return 0;
   }
 
-  public boolean canBeSeen(GridPosition position) {
+  public final boolean canBeSeen(GridPosition position) {
     return position.distanceTo(this.position) <= viewDistance;
   }
 

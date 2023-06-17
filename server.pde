@@ -133,13 +133,14 @@ public class Server {
     }
     incrementGridOccupancy(position);
     int positionInBox = gridOccupancyAtPosition(position);
-    //Agent agent = new Agent(nextAgentID++, position, positionInBox);    
+    Agent agent = new Agent(nextAgentID++, position, positionInBox);    
     //Agent agent = new MonumentViewingAgent(nextAgentID++, position, positionInBox);  
     //Agent agent = new MonumentEditingAgent(nextAgentID++, position, positionInBox);
     //Agent agent = new SmarterAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
     //Agent agent = new HomelyAgent(nextAgentID++, position, positionInBox); //Let's see how this lot does!!
-    Agent agent = new TalkativeAgent(nextAgentID++, position, positionInBox);
+    //Agent agent = new TalkativeAgent(nextAgentID++, position, positionInBox);
     //Agent agent = new RememberingAgent(nextAgentID++, position, positionInBox);
+    //Agent agent = new SocialAgent(nextAgentID++, position, positionInBox);
     agents.add(agent);
     return true;
   }
@@ -156,8 +157,8 @@ public class Server {
     if (monuments.containsKey(position) || monuments.size() == config.getNumMonuments()) {
       return false;
     }
-    //Monument monument = new Monument(position, "", config.getMonumentVisibility());
-    Monument monument = new CirclingMonument(position, "", config.getMonumentVisibility());
+    Monument monument = new Monument(position, "", config.getMonumentVisibility());
+    //Monument monument = new CirclingMonument(position, "", config.getMonumentVisibility());
     monuments.put(position, monument);
     return true;
   }
@@ -199,7 +200,7 @@ public class Server {
     nextDistrictNumber++;
   }
 
-  public boolean districtsOverlap(District d1, District d2) {
+  private boolean districtsOverlap(District d1, District d2) {
     if (d1.getBottomRight().getY() < d2.getTopLeft().getY() || d2.getBottomRight().getY() < d1.getTopLeft().getY()) {
       return false;
     }
@@ -395,12 +396,18 @@ public class Server {
   }
 
   private void handleMonumentViewing() {
+    if (config.getNumMonuments() == 0) {
+      return;
+    }
     for (Agent agent : agents) {
       agent.viewMonuments(monumentsVisibleForAgent(agent));
     }
   }
 
   private void handleMonumentEditing() {
+    if (config.getNumMonuments() == 0) {
+      return;
+    }
     for (Agent agent : agents) {
       GridPosition agentPosition = agent.getGridPosition();
       if (monuments.containsKey(agentPosition)) {
@@ -551,7 +558,7 @@ public class Server {
       stage = GameStage.COMMUNICATION;
       return;
     }
-    game.update();
+    gameGraphics.update();
   }
 
   private void communicationStage() {
@@ -584,7 +591,7 @@ public class Server {
         }
       }
       visInfoPanel.updateClusterCounts(agentsPerCluster);
-      game.update();
+      gameGraphics.update();
     }
     framesForClustering--;
     if (framesForClustering == 0) {
@@ -596,7 +603,7 @@ public class Server {
   private void votingStage() {
     if (framesForVotes == SHOW_VOTES_FRAMES) {
       conductVote();
-      game.update();
+      gameGraphics.update();
     }
     framesForVotes--;
     if (framesForVotes == 0) {
@@ -646,7 +653,7 @@ public class Server {
       stage = GameStage.START;
       return;
     }
-    game.update();
+    gameGraphics.update();
   }
 
   private void finishStage() {
@@ -667,7 +674,7 @@ public class Server {
       // Do nothing
       break;
     case PLACING:
-      game.update();
+      gameGraphics.update();
       break;
     case START:
       startStage();

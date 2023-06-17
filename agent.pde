@@ -19,23 +19,23 @@ public class Agent {
     this.currentDistrict = 0;
   }
 
-  public int getID() {
+  public final int getID() {
     return ID;
   }
 
-  public GridPosition getGridPosition() {
+  public final GridPosition getGridPosition() {
     return gridPosition;
   }
 
-  public void setGridPosition(GridPosition gridPosition) {
+  public final void setGridPosition(GridPosition gridPosition) {
     this.gridPosition = gridPosition;
   }
 
-  public GridPosition getNextGridPosition() {
+  public final GridPosition getNextGridPosition() {
     return nextGridPosition;
   }
 
-  public void setNextGridPosition(GridPosition nextGridPosition) {
+  public final void setNextGridPosition(GridPosition nextGridPosition) {
     this.nextGridPosition = nextGridPosition;
   }
 
@@ -43,48 +43,48 @@ public class Agent {
     return floor(random(validPositions.size()));
   }
 
-  public void reachedNextGridPosition() {
+  public final void reachedNextGridPosition() {
     gridPosition = nextGridPosition;
     positionInBox = nextPositionInBox;
   }
 
-  public int getPositionInBox() {
+  public final int getPositionInBox() {
     return positionInBox;
   }
 
-  public void setPositionInBox(int positionInBox) {
+  public final void setPositionInBox(int positionInBox) {
     this.positionInBox = positionInBox;
   }
 
-  public int getNextPositionInBox() {
+  public final int getNextPositionInBox() {
     return nextPositionInBox;
   }
 
-  public void setNextPositionInBox(int nextPositionInBox) {
+  public final void setNextPositionInBox(int nextPositionInBox) {
     this.nextPositionInBox = nextPositionInBox;
   }
 
-  public int getClusterNumber() {
+  public final int getClusterNumber() {
     return clusterNumber;
   }
 
-  public void setClusterNumber(int clusterNumber) {
+  public final void setClusterNumber(int clusterNumber) {
     this.clusterNumber = clusterNumber;
   }
 
-  public int getHomeDistrict() {
+  public final int getHomeDistrict() {
     return homeDistrict;
   }
 
-  public void setHomeDistrict(int homeDistrict) {
+  public final void setHomeDistrict(int homeDistrict) {
     this.homeDistrict = homeDistrict;
   }
 
-  public int getCurrentDistrict() {
+  public final int getCurrentDistrict() {
     return currentDistrict;
   }
 
-  public void setCurrentDistrict(int currentDistrict) {
+  public final void setCurrentDistrict(int currentDistrict) {
     this.currentDistrict = currentDistrict;
   }
 
